@@ -1,0 +1,175 @@
+
+out/main.elf:     file format elf32-littlearm
+
+SYMBOL TABLE:
+00000000 l    d  .text	00000000 .text
+00000000 l    d  .ARM.attributes	00000000 .ARM.attributes
+00000000 l    d  .comment	00000000 .comment
+00000000 l    d  .debug_line	00000000 .debug_line
+00000000 l    d  .debug_info	00000000 .debug_info
+00000000 l    d  .debug_abbrev	00000000 .debug_abbrev
+00000000 l    d  .debug_aranges	00000000 .debug_aranges
+00000000 l    d  .debug_str	00000000 .debug_str
+00000000 l    d  .debug_frame	00000000 .debug_frame
+00000000 l    df *ABS*	00000000 out/startup.o
+00000000 l    df *ABS*	00000000 main.c
+00000004 g       .text	00000000 ResetVector
+000000c0 g       .text	00000000 Reset_Handler
+00000000 g       .text	00000000 Vector_Table
+000000c6 g       .text	00000000 Default_Handler
+000000e4 g     F .text	00000060 main
+000000c8 g     F .text	0000001c delay
+
+
+
+Disassembly of section .text:
+
+00000000 <Vector_Table>:
+   0:	20002000 	.word	0x20002000
+
+00000004 <ResetVector>:
+   4:	000000c1 	.word	0x000000c1
+   8:	000000c7 	.word	0x000000c7
+   c:	000000c7 	.word	0x000000c7
+	...
+  2c:	000000c7 	.word	0x000000c7
+	...
+  38:	000000c7 	.word	0x000000c7
+  3c:	000000c7 	.word	0x000000c7
+  40:	000000c7 	.word	0x000000c7
+  44:	000000c7 	.word	0x000000c7
+  48:	000000c7 	.word	0x000000c7
+  4c:	000000c7 	.word	0x000000c7
+  50:	000000c7 	.word	0x000000c7
+  54:	000000c7 	.word	0x000000c7
+  58:	000000c7 	.word	0x000000c7
+  5c:	000000c7 	.word	0x000000c7
+  60:	000000c7 	.word	0x000000c7
+  64:	000000c7 	.word	0x000000c7
+  68:	000000c7 	.word	0x000000c7
+  6c:	000000c7 	.word	0x000000c7
+  70:	000000c7 	.word	0x000000c7
+  74:	000000c7 	.word	0x000000c7
+  78:	000000c7 	.word	0x000000c7
+  7c:	000000c7 	.word	0x000000c7
+  80:	000000c7 	.word	0x000000c7
+  84:	000000c7 	.word	0x000000c7
+  88:	000000c7 	.word	0x000000c7
+  8c:	000000c7 	.word	0x000000c7
+  90:	000000c7 	.word	0x000000c7
+  94:	000000c7 	.word	0x000000c7
+  98:	000000c7 	.word	0x000000c7
+  9c:	000000c7 	.word	0x000000c7
+  a0:	000000c7 	.word	0x000000c7
+  a4:	000000c7 	.word	0x000000c7
+  a8:	000000c7 	.word	0x000000c7
+  ac:	000000c7 	.word	0x000000c7
+  b0:	000000c7 	.word	0x000000c7
+  b4:	000000c7 	.word	0x000000c7
+  b8:	000000c7 	.word	0x000000c7
+  bc:	000000c7 	.word	0x000000c7
+
+000000c0 <Reset_Handler>:
+/* Stack pointer is already set to the value at entry 0 in the interrupt vector table  */
+/* Clock speed is set by default to the internal factory calibrated 8MHz RC oscillator */
+/* The PLL is configured to run at twice the RC clock speed so the default system      */
+/* operating speed is 16MHz							       */
+/* All that is left to do is to call main					       */
+		bl	main
+  c0:	f000 f810 	bl	e4 <main>
+		b	.	/* If main returns enter a loop */
+  c4:	e7fe      	b.n	c4 <Reset_Handler+0x4>
+
+000000c6 <Default_Handler>:
+Default_Handler:
+		b       .	/* Default handler just enters a loop.  Note the dot */
+  c6:	e7fe      	b.n	c6 <Default_Handler>
+
+000000c8 <delay>:
+//The disadvantage is that the CPU cannot do anything useful for the duration of the delay
+//By taking into account the CPU frequency and how many instructions it takes to execute 
+// the loop it is possible to determine a formula to calculate the number of cycles needed 
+// for a given amount of time expressed in seconds or ms, us 
+void delay(int dly)
+{
+  c8:	b580      	push	{r7, lr}
+  ca:	b082      	sub	sp, #8
+  cc:	af00      	add	r7, sp, #0
+  ce:	6078      	str	r0, [r7, #4]
+// This is a simple software delay. It stays in the while loop until the dly variable reaches zero 
+  while( dly--)
+  d0:	46c0      	nop			; (mov r8, r8)
+  d2:	687b      	ldr	r3, [r7, #4]
+  d4:	1e5a      	subs	r2, r3, #1
+  d6:	607a      	str	r2, [r7, #4]
+  d8:	2b00      	cmp	r3, #0
+  da:	d1fa      	bne.n	d2 <delay+0xa>
+  {
+	  ; //do nothing
+  }
+}
+  dc:	46c0      	nop			; (mov r8, r8)
+  de:	46bd      	mov	sp, r7
+  e0:	b002      	add	sp, #8
+  e2:	bd80      	pop	{r7, pc}
+
+000000e4 <main>:
+
+//This is the entry-point of our application. This fucntion is explicitly called (by a branch instruction)
+// from within the statup.s file after a reset
+int main()
+{
+  e4:	b580      	push	{r7, lr}
+  e6:	af00      	add	r7, sp, #0
+  RCC_AHBENR |= 1<<IOPC_EN; // Turn on the clock source for GPIO C
+  e8:	4b11      	ldr	r3, [pc, #68]	; (130 <main+0x4c>)
+  ea:	681a      	ldr	r2, [r3, #0]
+  ec:	4b10      	ldr	r3, [pc, #64]	; (130 <main+0x4c>)
+  ee:	2180      	movs	r1, #128	; 0x80
+  f0:	0309      	lsls	r1, r1, #12
+  f2:	430a      	orrs	r2, r1
+  f4:	601a      	str	r2, [r3, #0]
+  GPIOC_MODER |= PORT_MODE_OUTPUT << MODER8; // Make bit 8 an output on GPIO C
+  f6:	4b0f      	ldr	r3, [pc, #60]	; (134 <main+0x50>)
+  f8:	681a      	ldr	r2, [r3, #0]
+  fa:	4b0e      	ldr	r3, [pc, #56]	; (134 <main+0x50>)
+  fc:	2180      	movs	r1, #128	; 0x80
+  fe:	0249      	lsls	r1, r1, #9
+ 100:	430a      	orrs	r2, r1
+ 102:	601a      	str	r2, [r3, #0]
+  
+  while(1)// Repeat the following forever
+  {
+    GPIOC_ODR |= (1<<LED_PIN);// set Bit 8 (turn on LED)
+ 104:	4b0c      	ldr	r3, [pc, #48]	; (138 <main+0x54>)
+ 106:	681a      	ldr	r2, [r3, #0]
+ 108:	4b0b      	ldr	r3, [pc, #44]	; (138 <main+0x54>)
+ 10a:	2180      	movs	r1, #128	; 0x80
+ 10c:	0049      	lsls	r1, r1, #1
+ 10e:	430a      	orrs	r2, r1
+ 110:	601a      	str	r2, [r3, #0]
+    
+	delay(DELAY_VALUE);// Hang around for a bit
+ 112:	4b0a      	ldr	r3, [pc, #40]	; (13c <main+0x58>)
+ 114:	0018      	movs	r0, r3
+ 116:	f7ff ffd7 	bl	c8 <delay>
+    
+	GPIOC_ODR &= ~(1<<LED_PIN); // clear Bit 8 (turn off LED)
+ 11a:	4b07      	ldr	r3, [pc, #28]	; (138 <main+0x54>)
+ 11c:	681a      	ldr	r2, [r3, #0]
+ 11e:	4b06      	ldr	r3, [pc, #24]	; (138 <main+0x54>)
+ 120:	4907      	ldr	r1, [pc, #28]	; (140 <main+0x5c>)
+ 122:	400a      	ands	r2, r1
+ 124:	601a      	str	r2, [r3, #0]
+    
+	delay(DELAY_VALUE);// Wait for a while again
+ 126:	4b05      	ldr	r3, [pc, #20]	; (13c <main+0x58>)
+ 128:	0018      	movs	r0, r3
+ 12a:	f7ff ffcd 	bl	c8 <delay>
+    GPIOC_ODR |= (1<<LED_PIN);// set Bit 8 (turn on LED)
+ 12e:	e7e9      	b.n	104 <main+0x20>
+ 130:	40021014 	.word	0x40021014
+ 134:	48000800 	.word	0x48000800
+ 138:	48000814 	.word	0x48000814
+ 13c:	0007a120 	.word	0x0007a120
+ 140:	fffffeff 	.word	0xfffffeff
