@@ -9,16 +9,16 @@
 #This is how we define constants in a Makefile constant_name=value
 
 # Specify the compiler to use
-CC=arm-none-eabi-gcc
+CC=arm-linux-gnueabi-gcc
 # Specify the assembler to use
-AS=arm-none-eabi-as
+AS=arm-linux-gnueabi-as
 # Specity the linker to use
-LD=arm-none-eabi-ld
+LD=arm-linux-gnueabi-ld
 
 #Tools to copy, perform dump and show size of final binary
-OBJCOPY=arm-none-eabi-objcopy
-OBJDUMP=arm-none-eabi-objdump
-SIZE=arm-none-eabi-size
+OBJCOPY=arm-linux-gnueabi-objcopy
+OBJDUMP=arm-linux-gnueabi-objdump
+SIZE=arm-linux-gnueabi-size
 
 #These are the flags or parameters we will pass to the compiler and assembler.
 #The final command will look like "arm-none-eabi-gcc -mcpu=cortex-m0 -mthumb -g" 
@@ -58,6 +58,6 @@ out/startup.o: startup.s
 # if someone types in 'make clean' then remove all object files and executables
 # Just remove everything in the out/ folder
 clean: 
-	rm out/*
+	rm -rf out/*
 # the all target should first make clean then make main.elf above which depends on the objs as shown
 all: clean main.elf
