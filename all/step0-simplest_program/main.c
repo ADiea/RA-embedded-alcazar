@@ -22,7 +22,7 @@ Please see the document [STM32F051C8 Datasheet.pdf] section 3.7
 #include "stm32f0_architecture.h"
 
 //The Blue LED is on bit 8 of port C
-#define LED_PIN 8
+#define LED_PIN 9
 
 //Define a convenien delay value. A formula could be setup to convert from CPU frequency to actual time units
 #define DELAY_VALUE 500000
@@ -47,7 +47,7 @@ void delay(int dly)
 int main()
 {
   RCC_AHBENR |= 1<<IOPC_EN; // Turn on the clock source for GPIO C
-  GPIOC_MODER |= PORT_MODE_OUTPUT << MODER8; // Make bit 8 an output on GPIO C
+  GPIOC_MODER |= PORT_MODE_OUTPUT << MODER9; // Make bit 8 an output on GPIO C
   
   while(1)// Repeat the following forever
   {
