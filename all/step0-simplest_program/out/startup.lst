@@ -1,13 +1,13 @@
 ARM GAS  startup.s 			page 1
 
 
- GNU assembler version 2.29.51 (arm-none-eabi)
-	 using BFD version (GNU Tools for Arm Embedded Processors 7-2017-q4-major) 2.29.51.20171128.
+ GNU assembler version 2.26.1 (arm-linux-gnueabi)
+	 using BFD version (GNU Binutils for Ubuntu) 2.26.1.
  options passed	: -mcpu=cortex-m0 -mthumb -g -asghl=out/startup.lst 
  input file    	: startup.s
  output file   	: out/startup.o
- target        	: arm-none-eabi
- time stamp    	: 
+ target        	: arm-unknown-linux-gnueabi
+ time stamp    	: 2018-03-17T18:50:27.000+0200
 
 ARM GAS  startup.s 			page 2
 
@@ -100,12 +100,12 @@ ARM GAS  startup.s 			page 1
 
 
 DEFINED SYMBOLS
-           startup.s:10     .text:00000000 Vector_Table
-           startup.s:18     .text:00000004 ResetVector
-           startup.s:70     .text:000000c0 Reset_Handler
-           startup.s:80     .text:000000c6 Default_Handler
-                            .text:00000000 $d
-           startup.s:78     .text:000000c0 $t
+           startup.s:10     .text:0000000000000000 Vector_Table
+           startup.s:18     .text:0000000000000004 ResetVector
+           startup.s:70     .text:00000000000000c0 Reset_Handler
+           startup.s:80     .text:00000000000000c6 Default_Handler
+                            .text:0000000000000000 $d
+           startup.s:78     .text:00000000000000c0 $t
 
 UNDEFINED SYMBOLS
 main

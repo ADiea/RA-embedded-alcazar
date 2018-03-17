@@ -17,14 +17,14 @@ Please see the document [STM32F051C8 Datasheet.pdf] section 3.7
 					section 6.4.6 RCC_AHBENR note the offset from the RCC base which is 0x14
 */
 
-//Let's include the architecture defines. This way we will have access to all the register adresses needed
+//Let's include the architecture defines. This way we will have access to all the register addresses needed
 //for controlling the pins
 #include "stm32f0_architecture.h"
 
-//The Blue LED is on bit 8 of port C
-#define LED_PIN 8
+//The Green LED is on bit 9 of port C
+#define LED_PIN 9
 
-//Define a convenien delay value. A formula could be setup to convert from CPU frequency to actual time units
+//Define a convenient delay value. A formula could be setup to convert from CPU frequency to actual time units
 #define DELAY_VALUE 500000
 
 //This will keep the CPU busy in a loop thus creating a delay.
@@ -42,18 +42,18 @@ void delay(int dly)
   }
 }
 
-//This is the entry-point of our application. This fucntion is explicitly called (by a branch instruction)
+//This is the entry-point of our application. This function is explicitly called (by a branch instruction)
 // from within the statup.s file after a reset
 int main()
 {
   RCC_AHBENR |= 1<<IOPC_EN; // Turn on the clock source for GPIO C
-  GPIOC_MODER |= PORT_MODE_OUTPUT << MODER8; // Make bit 8 an output on GPIO C
+  GPIOC_MODER |= PORT_MODE_OUTPUT << MODER9; // Make bit 8 an output on GPIO C
   
   while(1)// Repeat the following forever
   {
     GPIOC_ODR |= (1<<LED_PIN);// set Bit 8 (turn on LED)
     
-	delay(DELAY_VALUE);// Hang around for a bit
+	delay(2*DELAY_VALUE);// Hang around for a bit
     
 	GPIOC_ODR &= ~(1<<LED_PIN); // clear Bit 8 (turn off LED)
     
