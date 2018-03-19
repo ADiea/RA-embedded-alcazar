@@ -92,7 +92,7 @@ int projectInit(void)
   
   initPWMrgbLED();
 
-  unsigned int state = 0, i=0;
+  int state = 0, i=0;
 
   while(1)// Repeat the following forever
   {
