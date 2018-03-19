@@ -27,6 +27,10 @@ Please see the document [STM32F051C8 Datasheet.pdf] section 3.7
 //Define a convenien delay value. A formula could be setup to convert from CPU frequency to actual time units
 #define DELAY_VALUE 500000
 
+// Macros to enable/disable global interrupts
+#define enable_interrupts() asm(" cpsie i ")
+#define disable_interrupts() asm(" cpsid i ")
+
 //This will keep the CPU busy in a loop thus creating a delay.
 //This is the simplest way to implement a delay and is called busy-loop delay
 //The disadvantage is that the CPU cannot do anything useful for the duration of the delay
@@ -42,12 +46,41 @@ void delay(int dly)
   }
 }
 
+
+void Timer1ISR() 
+{
+  TIM1_SR &= ~BIT0; // clear update interrupt flag
+  Count++;
+  if (Count > 1000) { // toggle the state of the LED every second
+    Count = 0;
+    ToggleBlueLED();
+  }   
+}
+
+
 //This is the entry-point of our application. This fucntion is explicitly called (by a branch instruction)
 // from within the statup.s file after a reset
 int main()
 {
+<<<<<<< HEAD
   RCC_AHBENR |= 1<<IOPC_EN; // Turn on the clock source for GPIO C
   GPIOC_MODER |= PORT_MODE_OUTPUT << MODER9; // Make bit 8 an output on GPIO C
+=======
+  RCC_AHBENR |= 1<<IOPC; // Turn on the clock source for GPIO C
+  GPIOC_MODER |= PORT_MODE_OUTPUT << MODER8; // Make bit 8 an output on GPIO C
+
+
+//timer setup
+  RCC_APB2ENR |= 1<<TIM1EN; // turn on clock for timer1
+
+  TIM1_ARR = 8000; // reload counter with 8000 at each overflow (equiv to 1ms)
+
+  ISER |= 1<<TIM1_EVENT; // enable timer interrupts in the NVIC
+  TIM1_CR1 |= 1<<4; // Downcounting    
+  TIM1_CR1 |= 1<<0; // enable counting    
+  TIM1_DIER  |= BIT0; // enable update event (reload event) interrupt  
+  enable_interrupts();
+>>>>>>> 8fc6e051b4878856e7741211082a40e46353e40a
   
   while(1)// Repeat the following forever
   {

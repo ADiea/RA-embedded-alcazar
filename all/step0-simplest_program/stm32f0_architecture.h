@@ -17,8 +17,9 @@ Please see the document [STM32F051C8 Datasheet.pdf] section 3.7
 					section 6.4.6 RCC_AHBENR note the offset from the RCC base which is 0x14
 */
 
-#define RCC_BASE 			0x40021000
+#define RCC_BASE 		0x40021000
 #define RCC_AHBENR_OFFSET 	0x14
+#define RCC_APB2ENR_OFFSET 	0x18
 
 //This macrodefinition means that we take the base address we add the offset and the resulting address we cast to a pointer to a unsigned int
 //We return the dereferenced opinter to that address so that we can assign values to it
@@ -28,8 +29,18 @@ Please see the document [STM32F051C8 Datasheet.pdf] section 3.7
 //	so we can write in code directly RCC_AHBENR = value 
 #define RCC_AHBENR (*((volatile unsigned int *)( RCC_BASE + RCC_AHBENR_OFFSET )))
 
+#define RCC_APB2ENR (*((volatile unsigned int *)( RCC_BASE + RCC_APB2ENR_OFFSET )))
+
 //In section 6.4.6 you see that bit 19 controls the clock for peripheral portC so we define this constant to be the bit position (19)
-#define IOPC_EN 19
+#define IOPF 22
+#define IOPE 21
+#define IOPD 20
+#define IOPC 19
+#define IOPB 18
+#define IOPA 17
+
+//In section 6.4.7 you see what bit controls which peripheral
+#define TIM1EN 11
 
 //The base of the GPIO_C register. Note the C in the GPIOC_BASE it comes from the periferal C, where we have our LED
 //See section 2.2.2 or search for GPIOC
@@ -75,3 +86,27 @@ up/pull-down whatever the I/O direction.
 
 //This port controls the output value of its pins see 8.4.6
 #define GPIOC_ODR (*((volatile unsigned int *)( GPIOC_BASE + GPIOx_ODR_OFFSET )))
+
+//external interrupts
+//http://www.hertaville.com/external-interrupts-on-the-stm32f0.html
+#define TIM1_EVENT 13
+
+//ISER
+
+#define ISER (*((volatile unsigned int *)( 0xE000E100 )))
+
+//Timer 1 
+
+//section 2.2.2 base
+#define TIM1_BASE 0x40012C00
+
+#define TIM1_ARR_OFFSET 0x2C
+
+#define TIM1_ARR (*((volatile unsigned int *)( TIM1_BASE + TIM1_ARR_OFFSET )))
+
+//TIM1_CCR1
+
+
+
+
+
