@@ -18,7 +18,8 @@ void enablePeripheral(ePeripherals peripheral, eEnableState enable)
 	{
 		pRCCRegister = &RCC_AHBENR;
 	}
-	else if(ePerif_TIM1 == peripheral || ePerif_TIM15 == peripheral)
+	else if(ePerif_TIM1 == peripheral || ePerif_TIM15 == peripheral ||
+			ePerif_SPI1EN == peripheral)
 	{
 		pRCCRegister = &RCC_APB2ENR;
 	}
@@ -33,7 +34,8 @@ void enablePeripheral(ePeripherals peripheral, eEnableState enable)
 	}
 }
 
-void systemInit()
+//rename function to main so the debugger sets the breakpoint correctly
+void main()
 {
 	//init the system
 

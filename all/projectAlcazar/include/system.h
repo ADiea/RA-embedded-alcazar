@@ -44,6 +44,9 @@ typedef enum
 	//These are bits from the RCC_APB2RSTR register!
 	ePerif_TIM1 = 11,
 	ePerif_TIM15 = 16,
+	ePerif_SPI1EN = 12,
+
+
 } ePeripherals;
 
 //define enable/disable values

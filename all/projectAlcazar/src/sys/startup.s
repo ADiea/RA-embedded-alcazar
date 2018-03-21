@@ -69,13 +69,13 @@ ResetVector:    .word     Reset_Handler+1     /* Reset Handler */
 		.thumb
 Reset_Handler:
 	.global Reset_Handler, Default_Handler
-    .extern  systemInit
+    .extern  main
 /* Stack pointer is already set to the value at entry 0 in the interrupt vector table  */
 /* Clock speed is set by default to the internal factory calibrated 8MHz RC oscillator */
 /* The PLL is configured to run at twice the RC clock speed so the default system      */
 /* operating speed is 16MHz							       */
 /* All that is left to do is to call main					       */
-		bl	systemInit
+		bl	main
 		b	.	/* If main returns enter a loop */
 Default_Handler:
 		b       .	/* Default handler just enters a loop.  Note the dot */
