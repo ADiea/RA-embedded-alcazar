@@ -1,0 +1,111 @@
+ARM GAS  src/sys/startup.s 			page 1
+
+
+ GNU assembler version 2.29.51 (arm-none-eabi)
+	 using BFD version (GNU Tools for Arm Embedded Processors 7-2017-q4-major) 2.29.51.20171128.
+ options passed	: -mcpu=cortex-m0 -mthumb -g -asghl=out/startup.lst 
+ input file    	: src/sys/startup.s
+ output file   	: out/startup.o
+ target        	: arm-none-eabi
+ time stamp    	: 
+
+ARM GAS  src/sys/startup.s 			page 2
+
+
+   1              	/* STM32f0discovery simple blink example
+   2              	 Author: Andrei Diea (github.com/ADiea)
+   3              	 Based on work by Frank Duignan [http://eleceng.dit.ie/frank/arm/BareMetalSTM32F0Discovery/blinky.h
+   4              	 */
+   5              	
+   6              			.thumb /*Cortex micros only understand thumb(2) code	*/
+   7              			.global Vector_Table, ResetVector	
+   8              	/* Set up interrupt vector table */
+   9              			.text
+  10              	Vector_Table:    
+  11 0000 00200020 			.word     0x20002000          /* Top of Stack */
+  12              	/* The interrupt vectors that follow are manually forced to be aligned along
+  13              	   odd addresses.  The reason for this is that the address for a Thumb instruction
+  14              	   must always have its LSB set to 1.  This does not mean that the instruction 
+  15              	   is stored at an odd number address.  The LSB is used as a flag to indicate
+  16              	   that an ARM (LSB=0) or a Thumb (LSB=1) instruction is being addressed. */
+  17              	
+  18 0004 01000000 	ResetVector:    .word     Reset_Handler+1     /* Reset Handler */
+  19 0008 01000000 	                .word     Default_Handler+1   /* NMI */
+  20 000c 01000000 	                .word     Default_Handler+1   /* Hard Fault */
+  21 0010 00000000 	                .word     0                   /* Reserved */
+  22 0014 00000000 	                .word     0                   /* Reserved */
+  23 0018 00000000 	                .word     0                   /* Reserved */
+  24 001c 00000000 	                .word     0                   /* Reserved */
+  25 0020 00000000 	                .word     0                   /* Reserved */
+  26 0024 00000000 	                .word     0                   /* Reserved */
+  27 0028 00000000 	                .word     0                   /* Reserved */
+  28 002c 01000000 	                .word     Default_Handler+1   /* SVC */
+  29 0030 00000000 	                .word     0                   /* Reserved */
+  30 0034 00000000 	                .word     0                   /* Reserved */
+  31 0038 01000000 	                .word     Default_Handler+1   /* PendSV */
+  32 003c 01000000 	                .word     Default_Handler+1   /* SysTick */
+  33              			
+  34              	/* External interrupt handlers follow */
+  35 0040 01000000 			.word	  Default_Handler + 1 /* WWDG */
+  36 0044 01000000 			.word	  Default_Handler + 1 /* PVD */
+  37 0048 01000000 			.word	  Default_Handler + 1 /* RTC */
+  38 004c 01000000 			.word	  Default_Handler + 1 /* FLASH */
+  39 0050 01000000 	 		.word	  Default_Handler + 1 /* RCC */
+  40 0054 01000000 			.word	  Default_Handler + 1 /* EXTI0_1 */
+  41 0058 01000000 			.word	  Default_Handler + 1 /* EXTI2_3 */
+  42 005c 01000000 			.word	  Default_Handler + 1 /* EXTI4_15 */
+  43 0060 01000000 			.word	  Default_Handler + 1 /* TSC */
+  44 0064 01000000 			.word	  Default_Handler + 1 /* DMA_CH1 */
+  45 0068 01000000 			.word	  Default_Handler + 1 /* DMA_CH2_3 */
+  46 006c 01000000 			.word	  Default_Handler + 1 /* DMA_CH4_5 */
+  47 0070 01000000 			.word	  Default_Handler + 1 /* ADC_COMP */
+  48 0074 01000000 			.word	  Default_Handler +1  /* TIM1_BRK_UP_TRG_COM */
+  49 0078 01000000 			.word	  Default_Handler + 1 /* TIM1_CC */
+  50 007c 01000000 			.word	  Default_Handler + 1 /* TIM2 */
+  51 0080 01000000 			.word	  Default_Handler + 1 /* TIM3 */
+  52 0084 01000000 			.word	  Default_Handler + 1 /* TIM6_DAC */
+  53 0088 01000000 			.word	  Default_Handler + 1 /* RESERVED */
+  54 008c 01000000 			.word	  Default_Handler + 1 /* TIM14 */
+  55 0090 01000000 			.word	  Default_Handler + 1 /* TIM15 */
+  56 0094 01000000 	  		.word	  Default_Handler + 1 /* TIM16 */
+  57 0098 01000000 			.word	  Default_Handler + 1 /* TIM17 */
+ARM GAS  src/sys/startup.s 			page 3
+
+
+  58 009c 01000000 			.word	  Default_Handler + 1 /* I2C1 */
+  59 00a0 01000000 			.word	  Default_Handler + 1 /* I2C2 */
+  60 00a4 01000000 			.word	  Default_Handler + 1 /* SPI1 */
+  61 00a8 01000000 			.word	  Default_Handler + 1 /* SPI2 */
+  62 00ac 01000000 			.word	  Default_Handler + 1 /* USART1 */
+  63 00b0 01000000 			.word	  Default_Handler + 1 /* USART2 */
+  64 00b4 01000000 			.word	  Default_Handler + 1 /* RESERVED */
+  65 00b8 01000000 			.word	  Default_Handler + 1 /* CEC */
+  66 00bc 01000000 	 		.word	  Default_Handler + 1 /* RESERVED */
+  67              	
+  68              	/* Reset handler - this is called immediately after power is applied */
+  69              			.thumb
+  70              	Reset_Handler:
+  71              		.global Reset_Handler, Default_Handler
+  72              	    .extern  main
+  73              	/* Stack pointer is already set to the value at entry 0 in the interrupt vector table  */
+  74              	/* Clock speed is set by default to the internal factory calibrated 8MHz RC oscillator */
+  75              	/* The PLL is configured to run at twice the RC clock speed so the default system      */
+  76              	/* operating speed is 16MHz							       */
+  77              	/* All that is left to do is to call main					       */
+  78 00c0 FFF7FEFF 			bl	main
+  79 00c4 FEE7     			b	.	/* If main returns enter a loop */
+  80              	Default_Handler:
+  81 00c6 FEE7     			b       .	/* Default handler just enters a loop.  Note the dot */
+ARM GAS  src/sys/startup.s 			page 4
+
+
+DEFINED SYMBOLS
+   src/sys/startup.s:10     .text:00000000 Vector_Table
+   src/sys/startup.s:18     .text:00000004 ResetVector
+   src/sys/startup.s:70     .text:000000c0 Reset_Handler
+   src/sys/startup.s:80     .text:000000c6 Default_Handler
+                            .text:00000000 $d
+   src/sys/startup.s:78     .text:000000c0 $t
+
+UNDEFINED SYMBOLS
+main

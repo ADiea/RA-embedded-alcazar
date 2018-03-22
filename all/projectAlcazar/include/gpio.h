@@ -83,17 +83,25 @@ typedef enum
 /*
  * Sets the pin "pinNumber" of port "port" mode
  * */
-void setPinMode(GPIO_Type * port, unsigned int pinNumber, ePinMode pinMode);
+void setPinMode(volatile GPIO_Type * port, unsigned int pinNumber, ePinMode pinMode);
 
 /*
  * Writes 1/0 to the corresponding pinNumber of port "port"
  * */
-void writePin(GPIO_Type * port, unsigned int pinNumber, unsigned int value);
+void writePin(volatile GPIO_Type * port, unsigned int pinNumber, unsigned int value);
 
 /*
  * Returns 1 if pin "pinNumber" in port "port" is set and 0 if the pin is not set
  * */
-unsigned int readPin(GPIO_Type * port, unsigned int pinNumber);
+unsigned int readPin(volatile GPIO_Type * port, unsigned int pinNumber);
+
+/*
+ * Sets the pin "pinNumber" of port "port" alternate function "pinFunction"
+ * For corresponding alternate function number to actual function see chapters
+ * Table 14 & Table 15 in [STM32F051C8_Datasheet] -
+ * 	Alternate functions selected through GPIOx_AFR registers
+ * */
+void setPinAlternateFunction(volatile GPIO_Type * port, unsigned int pinNumber, ePinAlternateFunc pinFunction);
 
 /*
  * Sets the pin Pull-up Pull-Down

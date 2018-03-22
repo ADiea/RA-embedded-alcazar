@@ -25,22 +25,22 @@ void busyDelayMs(unsigned int ms)
 		//must wait for 1ms
 
 		//first stop the timer in case it is counting
-		stopTimer(eTimer_TIM15);
+		stopTimer(TIM15);
 
 		//set counter to zero
-		setTimerCounter(eTimer_TIM15, 0);
+		setTimerCounter(TIM15, 0);
 
 		//set prescaler 1 so counter will count using
 		//the same frequency as the cpu, undivided
-		setTimerPrescaler(eTimer_TIM15, 1);
+		setTimerPrescaler(TIM15, 0);
 
 		//start counting up
-		startTimer(eTimer_TIM15, eTimerDirection_Up);
+		startTimer(TIM15, eTimerDirection_Up);
 
 		// wait for timer to reach TIMER_COUNT_PER_MS
 		while(1)
 		{
-			value = getTimerValue(eTimer_TIM15);
+			value = getTimerValue(TIM15);
 			if(value >   TIMER_COUNT_PER_MS)
 			{
 				break;
