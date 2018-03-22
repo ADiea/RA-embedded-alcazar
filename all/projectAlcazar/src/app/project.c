@@ -88,7 +88,8 @@ int projectInit(void)
   enablePeripheral(ePerif_GPIOC, eEnabled);
 
   //TODO: replace with setPinMode(GPIOC, LED_PIN, ePin_Output);
-  GPIOC->MODER |= ePin_Output << MODERPOS(LED_PIN); // Make bit 8 an output on GPIO C
+  //GPIOC->MODER |= ePin_Output << MODERPOS(LED_PIN); // Make bit 8 an output on GPIO C
+  setPinMode(GPIOC,LED_PIN,ePin_Output);
   
   initPWMrgbLED();
 
@@ -98,12 +99,14 @@ int projectInit(void)
   {
 
 	//TODO: replace with writePin(GPIOC, LED_PIN, 1);
-    GPIOC->ODR |= (1<<LED_PIN);// set Bit 8 (turn on LED)
-    
+    //GPIOC->ODR |= (1<<LED_PIN);// set Bit 8 (turn on LED)
+	writePin(GPIOC, LED_PIN, 1);
+
     busyDelayMs(LED_ON_TIME);
     
 	//TODO: replace with writePin(GPIOC, LED_PIN, 0);
-	GPIOC->ODR &= ~(1<<LED_PIN); // clear Bit 8 (turn off LED)
+	//GPIOC->ODR &= ~(1<<LED_PIN); // clear Bit 8 (turn off LED)
+    writePin(GPIOC, LED_PIN, 0);
     
 	busyDelayMs(LED_OFF_TIME);
 

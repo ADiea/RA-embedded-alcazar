@@ -10,6 +10,10 @@
  * */
 void setPinMode(volatile GPIO_Type * port, unsigned int pinNumber, ePinMode pinMode)
 {
+	if(!port || pinNumber>15)
+		return;
+	port->MODER &= ~( 0x3 << 2*pinNumber );// Deletes previous setting of the pin mode
+	port->MODER |= pinMode << 2*pinNumber;// Sets the pin
 	//TODO: write function
 }
 
@@ -18,6 +22,10 @@ void setPinMode(volatile GPIO_Type * port, unsigned int pinNumber, ePinMode pinM
  * */
 void writePin(volatile GPIO_Type * port, unsigned int pinNumber, unsigned int value)
 {
+	if(!port || pinNumber>15 || value>1)
+			return;
+	port->ODR &= ~(1<<pinNumber);// Deletes previous setting of the pin
+	port->ODR |= value<<pinNumber;// Sets the pin value
 	//TODO: write function
 }
 
