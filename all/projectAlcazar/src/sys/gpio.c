@@ -10,7 +10,10 @@
  * */
 void setPinMode(volatile GPIO_Type * port, unsigned int pinNumber, ePinMode pinMode)
 {
-	//TODO: write function
+	if (!port || pinNumber > 15)
+		return;
+
+	port->MODER |= pinMode << MODERPOS(pinNumber);
 }
 
 /*
@@ -18,7 +21,17 @@ void setPinMode(volatile GPIO_Type * port, unsigned int pinNumber, ePinMode pinM
  * */
 void writePin(volatile GPIO_Type * port, unsigned int pinNumber, unsigned int value)
 {
-	//TODO: write function
+	if (!port || pinNumber > 15)
+		return;
+
+	if (value)
+	{
+		port->ODR |= (1<<pinNumber);
+	}
+	else
+	{
+		port->ODR &= ~(1<<pinNumber);
+	}
 }
 
 /*
@@ -31,7 +44,7 @@ unsigned int readPin(volatile GPIO_Type * port, unsigned int pinNumber)
 
 	unsigned int pinValue = 0;
 
-	if(port->IDR & 1<<pinNumber)
+	if(port->IDR & (1<<pinNumber))
 	{
 		pinValue = 1;
 	}
