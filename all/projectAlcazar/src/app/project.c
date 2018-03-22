@@ -11,10 +11,10 @@
 #define LED_PIN 8
 
 //define a led on delay time of 1s = 1000ms
-#define LED_ON_TIME 100
+#define LED_ON_TIME 1300
 
 //define a led on delay time of 0.5s = 500ms
-#define LED_OFF_TIME 500
+#define LED_OFF_TIME 400
 
 //This is the entry-point of our application.
 //This is the "main" function for the project
@@ -22,25 +22,15 @@
 int projectInit()
 {
   enablePeripheral(ePerif_GPIOC, eEnabled);
-
-  //TODO: replace with setPinMode(GPIOC, LED_PIN, ePin_Output);
-  GPIOC->MODER |= ePin_Output << MODERPOS(LED_PIN); // Make bit 8 an output on GPIO C
+  setPinMode(GPIOC, LED_PIN, ePin_Output);  // Make bit 8 an output on GPIO C
   
   while(1)// Repeat the following forever
   {
-
-	//TODO: replace with writePin(GPIOC, LED_PIN, 1);
-    GPIOC->ODR |= (1<<LED_PIN);// set Bit 8 (turn on LED)
-    
+	writePin(GPIOC, LED_PIN, 1);  // set Bit 8 (turn on LED)
     busyDelayMs(LED_ON_TIME);
     
-	//TODO: replace with writePin(GPIOC, LED_PIN, 0);
-	GPIOC->ODR &= ~(1<<LED_PIN); // clear Bit 8 (turn off LED)
-    
-	busyDelayMs(LED_OFF_TIME);
-
-
-
+    writePin(GPIOC, LED_PIN, 0); // clear Bit 8 (turn off LED)
+    busyDelayMs(LED_OFF_TIME);
   }
   
   //will never reach this point
