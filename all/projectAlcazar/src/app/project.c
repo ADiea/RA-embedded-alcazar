@@ -14,10 +14,10 @@
 #define LED_PIN 8
 
 //define a led on delay time of 1s = 1000ms
-#define LED_ON_TIME 1300
+#define LED_ON_TIME 100
 
 //define a led on delay time of 0.5s = 500ms
-#define LED_OFF_TIME 400
+#define LED_OFF_TIME 500
 
 //let's define how to connect the RGB led pins to the MCU
 //because we decided we'll use TIMER 1 for pwm generation,
@@ -108,14 +108,11 @@ void initPWMrgbLED(void)
 	//Please see function implementation in timer.c
 	/*
 	 Prescaler is set to 799 clock is divided by 799+1 = 800 => timer counts with 10kHz frequency
-
 	 We set the autoload value to 100 means that counter counts to 100 then restarts from zero
 	 If timer counts with 10kHz, means that timer counts to 100 once every 10ms, or 100 times per second
 	 This means that PWM period is 0.01s, or we can say PWM frequency is 1/0.01s = 100Hz
-
 	 The duty cycle is from zero to ARR and we set the ARR to 100 so we can directly set the cycle
 	 from 0% to 100% by setting the value from 0 to 100
-
 	 Initially dutycycle is set to zero, so all 3 channels will be 0
 	 */
 	setupPWMConfiguration(TIM1, 100, 799);
@@ -146,16 +143,10 @@ int projectInit(void)
 
   while(1)// Repeat the following forever
   {
-	writePin(GPIOC, LED_PIN, 1);  // set Bit 8 (turn on LED)
+	writePin(GPIOC, LED_PIN, 1); // set Bit 8 (turn on LED)
     busyDelayMs(LED_ON_TIME);
     
-<<<<<<< HEAD
-    writePin(GPIOC, LED_PIN, 0); // clear Bit 8 (turn off LED)
-    busyDelayMs(LED_OFF_TIME);
-=======
-	//TODO: replace with writePin(GPIOC, LED_PIN, 0);
-	GPIOC->ODR &= ~(1<<LED_PIN); // clear Bit 8 (turn off LED)
-    
+    writePin(GPIOC, LED_PIN, 0);  // clear Bit 8 (turn off LED)
 	busyDelayMs(LED_OFF_TIME);
 
 	//we make a "game" by enabling different color transitions depending on a state variable
@@ -222,7 +213,6 @@ int projectInit(void)
 	putChar((char)state, //print state value
 				(unsigned char)state); //print it to the 'state' position
 
->>>>>>> upstream/master
   }
   
   //will never reach this point

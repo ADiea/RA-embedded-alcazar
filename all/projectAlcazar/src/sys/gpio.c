@@ -18,15 +18,11 @@ void setPUPD(GPIO_Type * port, unsigned int pinNumber, ePUPDType PinPUPD)
  * */
 void setPinMode(volatile GPIO_Type * port, unsigned int pinNumber, ePinMode pinMode)
 {
-<<<<<<< HEAD
-	//TODO: write function
-	port->MODER |= pinMode << (2*pinNumber);
-=======
+
 	if (!port || pinNumber > 15)
 		return;
 
 	port->MODER |= pinMode << MODERPOS(pinNumber);
->>>>>>> upstream/master
 }
 
 /*
@@ -34,10 +30,6 @@ void setPinMode(volatile GPIO_Type * port, unsigned int pinNumber, ePinMode pinM
  * */
 void writePin(volatile GPIO_Type * port, unsigned int pinNumber, unsigned int value)
 {
-<<<<<<< HEAD
-	port->ODR &= ~(1UL << pinNumber); //clear the bit
-	port->ODR |= value << pinNumber;  // set the bit
-=======
 	if (!port || pinNumber > 15)
 		return;
 
@@ -53,7 +45,6 @@ void writePin(volatile GPIO_Type * port, unsigned int pinNumber, unsigned int va
 	{
 		return;
 	}
->>>>>>> upstream/master
 }
 
 /*
