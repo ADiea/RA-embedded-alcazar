@@ -12,6 +12,7 @@
 #define MAX7219_H
 
 #include <spi.h>
+#include <spisoft.h>
 
 
 #define MAX7219_REG_NOOP 			0x0

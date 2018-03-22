@@ -6,13 +6,22 @@
 #include <max7219.h>
 #include <gpio.h>
 
+#define USE_SOFT_SPI 1
+
+#if !USE_SOFT_SPI
 //this is a global variable
 volatile SPI_Type* gDisplaySPI;
+#endif
 
 //initializes the display
 void initMAX7219Display(volatile SPI_Type* spiToBeUsed)
 {
+
+#if !USE_SOFT_SPI
+	if(!spiToBeUsed)
+		return;
 	gDisplaySPI = spiToBeUsed;
+#endif
 
 	//send commands to setup the display the way we want
 	setIntensity(MAX7219_MAX_INTENSITY);
@@ -29,17 +38,34 @@ void initMAX7219Display(volatile SPI_Type* spiToBeUsed)
 //address are sent as successive bytes
 void sendMAX7219Data(unsigned char registerAddress, unsigned char data)
 {
-
+#if !USE_SOFT_SPI
 	//enable the slave
 	GPIOA->ODR &= ~(1<<4);
+#else
+	spiSoftEnableSlave(1);
+#endif
 
+#if !USE_SOFT_SPI
 	//First we send the address coded in the lsb nibble of the byte
 	sendSPIByte(gDisplaySPI, registerAddress);
 
 	//Next we send the user data
 	sendSPIByte(gDisplaySPI, data);
+#else
+	//First we send the address coded in the lsb nibble of the byte
+	spiSoftSendByte(registerAddress);
 
+	//Next we send the user data
+	spiSoftSendByte(data);
+#endif
+
+#if !USE_SOFT_SPI
+	//disable the slave
 	GPIOA->ODR |= (1<<4);
+#else
+	spiSoftEnableSlave(0);
+#endif
+
 }
 
 //displays character ch to the pos position

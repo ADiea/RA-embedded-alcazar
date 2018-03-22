@@ -24,17 +24,13 @@ void writePin(volatile GPIO_Type * port, unsigned int pinNumber, unsigned int va
 	if (!port || pinNumber > 15)
 		return;
 
-	if (value == 1)
+	if (value)
 	{
 		port->ODR |= (1<<pinNumber);
 	}
-	else if (value == 0)
-	{
-		port->ODR &= ~(1<<pinNumber);
-	}
 	else
 	{
-		return;
+		port->ODR &= ~(1<<pinNumber);
 	}
 }
 
