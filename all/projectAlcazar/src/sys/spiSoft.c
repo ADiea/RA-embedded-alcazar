@@ -53,7 +53,7 @@ void spiSoftEnableSlave(unsigned char enable)
 //send a byte to the slave using the SPI in software (known also as bit banging)
 void spiSoftSendByte(unsigned char byte)
 {
-	unsigned char i=0;
+	int i=0;
 	//we will send the 8 bits MSB first. This should be configurable
 
 	//the slave should be already enabled by calling the enableSlave first
