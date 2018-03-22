@@ -6,11 +6,20 @@
 #include <gpio.h>
 
 /*
+ * Sets the pin Pull-up Pull-Down
+ */
+void setPUPD(GPIO_Type * port, unsigned int pinNumber, ePUPDType PinPUPD)
+{
+	port->PUPDR |= PinPUPD << (2*pinNumber);
+}
+
+/*
  * Sets the pin "pinNumber" of port "port" mode
  * */
 void setPinMode(GPIO_Type * port, unsigned int pinNumber, ePinMode pinMode)
 {
 	//TODO: write function
+	port->MODER |= pinMode << (2*pinNumber);
 }
 
 /*
@@ -18,7 +27,8 @@ void setPinMode(GPIO_Type * port, unsigned int pinNumber, ePinMode pinMode)
  * */
 void writePin(GPIO_Type * port, unsigned int pinNumber, unsigned int value)
 {
-	//TODO: write function
+	port->ODR &= ~(1UL << pinNumber); //clear the bit
+	port->ODR |= value << pinNumber;  // set the bit
 }
 
 /*
