@@ -21,14 +21,15 @@ ifeq ($(WINDOWS),1)
 	DELETE = rm
 	DELETEFLAGS = -rf
 else ifeq ($(MACOSX),1)
-	CC = arm-none-eabi-gcc
-	AS = arm-none-eabi-as
-	LD = arm-none-eabi-ld
-	OBJCOPY = arm-none-eabi-objcopy
-	OBJDUMP = arm-none-eabi-objdump
-	SIZE = arm-none-eabi-size
+	TOOLS=/Users/adiea/Desktop/arm-tool/gcc-arm-none-eabi-5_4-2016q3/bin
+	CC = $(TOOLS)/arm-none-eabi-gcc
+	AS = $(TOOLS)/arm-none-eabi-as
+	LD = $(TOOLS)/arm-none-eabi-ld
+	OBJCOPY = $(TOOLS)/arm-none-eabi-objcopy
+	OBJDUMP = $(TOOLS)/arm-none-eabi-objdump
+	SIZE = $(TOOLS)/arm-none-eabi-size
 	DELETE = rm
-	DELETEFLAGS = -rf 
+	DELETEFLAGS = -rf
 else
 	CC=arm-linux-gnueabi-gcc
 	AS=arm-linux-gnueabi-as

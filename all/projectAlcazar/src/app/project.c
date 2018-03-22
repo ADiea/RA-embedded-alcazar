@@ -166,6 +166,7 @@ int projectInit(void)
 
   //TODO: replace with setPinMode(GPIOC, LED_PIN, ePin_Output);
   GPIOC->MODER |= ePin_Output << MODERPOS(LED_PIN); // Make bit 8 an output on GPIO C
+  GPIOC->ODR |= (1<<LED_PIN);// set Bit 8 (turn on LED)
   
   initPWMrgbLED();
 
