@@ -69,6 +69,13 @@ typedef enum
 	ePin_AF7
 } ePinAlternateFunc;
 
+typedef enum
+{
+	ePin_NoPull = 0x00,
+	ePin_PullUp = 0x01,
+	ePin_PullDown = 0x10
+} ePUPDType;
+
 //Offset of the mode setting for pin p in the GPIOx_MODER register is p*2
 #define MODERPOS(x) ((x)<<1)
 
@@ -87,6 +94,11 @@ void writePin(GPIO_Type * port, unsigned int pinNumber, unsigned int value);
  * Returns 1 if pin "pinNumber" in port "port" is set and 0 if the pin is not set
  * */
 unsigned int readPin(GPIO_Type * port, unsigned int pinNumber);
+
+/*
+ * Sets the pin Pull-up Pull-Down
+ */
+void setPUPD(GPIO_Type * port, unsigned int pinNumber, ePUPDType PinPUPD);
 
 
 #endif //GPIO_H
