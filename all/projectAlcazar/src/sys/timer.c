@@ -14,7 +14,7 @@ void setTimerCounter(volatile Timer_Type* timer, unsigned int value)
 //making the counter count 2 times slower than cpu frequency
 void setTimerPrescaler(volatile Timer_Type* timer, unsigned int value)
 {
-	//TODO: implement function based on reference manual
+	timer->PSC = value;// value==0 -> prescaler set to 1
 }
 
 //stops the timer from counting
@@ -99,7 +99,7 @@ void setupPWMConfiguration(volatile Timer_Type* timer,
 
 	//For setting the output compare mode in CCMR register,
 	//must first clear the CCxE bits in CCER
-	//>> Note: CC2S bits are writable only when the channel is OFF (CCxE = ‘0’ in TIMx_CCER).
+	//>> Note: CC2S bits are writable only when the channel is OFF (CCxE = ï¿½0ï¿½ in TIMx_CCER).
 	timer->CCER = 0;
 
 	//see section 17.4.7. We set the 3 channels in output compare mode.

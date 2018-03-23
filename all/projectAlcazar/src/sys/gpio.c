@@ -12,7 +12,7 @@ void setPinMode(volatile GPIO_Type * port, unsigned int pinNumber, ePinMode pinM
 {
 	if (!port || pinNumber > 15)
 		return;
-
+	port->MODER &= ~( 0x3 << 2*pinNumber );// Deletes previous setting of the pin mode
 	port->MODER |= pinMode << MODERPOS(pinNumber);
 }
 
