@@ -10,8 +10,10 @@
 #include <spi.h>
 #include <max7219.h>
 
-//The Blue LED is on bit 8 of port C
-#define LED_PIN 8
+//HOMEWORK: PIN 8 = ld4 = blue
+//HOMEWORK: PIN 9 = ld3 = green
+#define LED_PIN_BLUE 8
+#define LED_PIN_GREEN 9
 
 //define a led on delay time of 1s = 1000ms
 #define LED_ON_TIME 100
@@ -33,6 +35,12 @@
 #define LED_RGB_RED_CH 2
 #define LED_RGB_GREEN_CH 1
 #define LED_RGB_BLUE_CH 0
+
+//HOMEWORK: PC8 + PC9 sunt definiti pe cananlul TIM2 (n-1 in functie de canal)
+//PC8 - TIM_CH3
+//PC9 - TIM2_CH4
+#define LED_PIN_BLUE_CH 2
+#define LED_PIN_GREEN_CH 3
 
 //These pins are alternate function for SPI1 peripheral on port A
 //we will not use these pins directly, the SPI peripheral will use them for communication
@@ -109,6 +117,23 @@ void initSegmentDisplaySoftwareSPI(void)
 	initMAX7219Display(0);
 }
 
+//HOMEWORK: functia pentru pwm-ul led-urilor de pe placa
+void initBoardPWM(void)
+{
+	//HOMEWORK: dam enable la portul c de gpio
+	enablePeripheral(ePerif_GPIOC, eEnabled);
+
+	//HOMEWORK: setam alternate function pentru pc8 + pc9
+	setPinAlternateFunction(GPIOC, LED_PIN_BLUE, ePin_AF2);
+	setPinAlternateFunction(GPIOC, LED_PIN_GREEN, ePin_AF2);
+
+	//enable timer 3 to use it as hardware PWM generator
+	enablePeripheral(ePerif_TIM3EN, eEnabled);
+
+	//HOMEWORK: am facut pwm-ul pentru timerul 3
+	setupPWMConfiguration(TIM3, 100, 799);
+}
+
 void initPWMrgbLED(void)
 {
 	//We'll use first three output compare channels from timer1 to output 3 PWM
@@ -162,13 +187,12 @@ void initPWMrgbLED(void)
 // main is actually a convention we can use any function name, so we choose projectInit
 int projectInit(void)
 {
-  enablePeripheral(ePerif_GPIOC, eEnabled);
-
-  //TODO: replace with setPinMode(GPIOC, LED_PIN, ePin_Output);
-  GPIOC->MODER |= ePin_Output << MODERPOS(LED_PIN); // Make bit 8 an output on GPIO C
-  GPIOC->ODR |= (1<<LED_PIN);// set Bit 8 (turn on LED)
+   //TODO: replace with setPinMode(GPIOC, LED_PIN, ePin_Output);
+  //GPIOC->MODER |= ePin_Output << MODERPOS(LED_PIN); // Make bit 8 an output on GPIO C
+  //GPIOC->ODR |= (1<<LED_PIN);// set Bit 8 (turn on LED)
   
   initPWMrgbLED();
+  initBoardPWM();
 
   //initSegmentDisplay();
   initSegmentDisplaySoftwareSPI();
@@ -179,12 +203,12 @@ int projectInit(void)
   {
 
 	//TODO: replace with writePin(GPIOC, LED_PIN, 1);
-    GPIOC->ODR |= (1<<LED_PIN);// set Bit 8 (turn on LED)
+    //GPIOC->ODR |= (1<<LED_PIN);// set Bit 8 (turn on LED)
     
     busyDelayMs(LED_ON_TIME);
     
 	//TODO: replace with writePin(GPIOC, LED_PIN, 0);
-	GPIOC->ODR &= ~(1<<LED_PIN); // clear Bit 8 (turn off LED)
+	//GPIOC->ODR &= ~(1<<LED_PIN); // clear Bit 8 (turn off LED)
     
 	busyDelayMs(LED_OFF_TIME);
 
@@ -195,6 +219,10 @@ int projectInit(void)
 			for(i=0; i<=100; i++)
 			{
 				setPWMDuty(TIM1, LED_RGB_RED_CH, i);
+
+				//HOMEWORK: ii dam sa sara
+				setPWMDuty(TIM3, LED_PIN_BLUE_CH, i);
+				setPWMDuty(TIM3, LED_PIN_GREEN_CH, i);
 				busyDelayMs(10);
 			}
 			break;
@@ -218,7 +246,11 @@ int projectInit(void)
 				setPWMDuty(TIM1, LED_RGB_RED_CH, i);
 				setPWMDuty(TIM1, LED_RGB_GREEN_CH, i);
 				setPWMDuty(TIM1, LED_RGB_BLUE_CH, i);
-				busyDelayMs(50);
+
+				//HOMEWORK: ii dam sa nu mai sara
+				setPWMDuty(TIM3, LED_PIN_BLUE_CH, i);
+				setPWMDuty(TIM3, LED_PIN_GREEN_CH, i);
+				busyDelayMs(10);
 			}
 			break;
 		case 4:
@@ -234,8 +266,11 @@ int projectInit(void)
 			{
 				setPWMDuty(TIM1, LED_RGB_GREEN_CH, i);
 				setPWMDuty(TIM1, LED_RGB_BLUE_CH, 100 - i);
-				busyDelayMs(30);
+				busyDelayMs(10);
 			}
+			break;
+		case 6:
+			busyDelayMs(10);
 			break;
 		default:
 			//reset state to start over the game
@@ -247,10 +282,14 @@ int projectInit(void)
 	};
 
 	state++;
+	//printf(state);
 
+	//	putChar((char)state, //print state value
 	//display current state to the MAX7219 connected display to position state
 	putChar((char)state, //print state value
-				(unsigned char)state); //print it to the 'state' position
+			(unsigned char)state); //print it to the 'state' position
+
+
 
   }
   

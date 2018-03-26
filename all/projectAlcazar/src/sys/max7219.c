@@ -74,7 +74,7 @@ void putChar(char ch, unsigned char pos)
 	//we send the ch character to the corresponding register
 	if(pos <= 7)
 	{
-		sendMAX7219Data(MAX7219_REG_POS_0 + pos, ch);
+		sendMAX7219Data(MAX7219_REG_POS_0 + 7- pos, ch);
 	}
 }
 

@@ -10,6 +10,8 @@
 
 //see 2.2.2 in reference manual
 #define TIM1_BASE 0x40012C00
+//HOMEWORK: am declarat timerul 3
+#define TIM3_BASE 0x40000400
 #define TIM15_BASE 0x40014000
 
 //! Because timers are not all the same, some offer slightly different functions
@@ -50,7 +52,10 @@ typedef struct
 	unsigned int DMAR; //17.4.20 TIM1 DMA address for full transfer (TIM1_DMAR)
 }Timer_Type;
 
+
 #define TIM1 ((volatile Timer_Type*)TIM1_BASE)
+//HOMEWORK: am declarat timerul 3
+#define TIM3 ((volatile Timer_Type*)TIM3_BASE)
 #define TIM15 ((volatile Timer_Type*)TIM15_BASE)
 
 typedef enum

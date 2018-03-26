@@ -42,9 +42,12 @@ typedef enum
 	ePerif_GPIOF = 22,
 
 	//These are bits from the RCC_APB2RSTR register!
-	ePerif_TIM1 = 11,
-	ePerif_TIM15 = 16,
-	ePerif_SPI1EN = 12,
+	ePerif_TIM1 = 11, //TIM1EN
+	ePerif_TIM15 = 16, //TIM15EN
+	ePerif_SPI1EN = 12,  //SPI1EN
+	//The bits from RCC_APB1ENR register
+	// TIM3EN
+	ePerif_TIM3EN = 1
 
 
 } ePeripherals;
