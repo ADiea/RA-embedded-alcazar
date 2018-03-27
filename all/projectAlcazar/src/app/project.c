@@ -36,9 +36,9 @@
 #define LED_RGB_GREEN_CH 1
 #define LED_RGB_BLUE_CH 0
 
-//HOMEWORK: PC8 + PC9 sunt definiti pe cananlul TIM2 (n-1 in functie de canal)
-//PC8 - TIM_CH3
-//PC9 - TIM2_CH4
+//HOMEWORK: PC8 + PC9 sunt definiti pe cananlul TIM3 (n-1 in functie de canal)
+//PC8 - TIM3_CH3
+//PC9 - TIM3_CH4
 #define LED_PIN_BLUE_CH 2
 #define LED_PIN_GREEN_CH 3
 
@@ -120,18 +120,18 @@ void initSegmentDisplaySoftwareSPI(void)
 //HOMEWORK: functia pentru pwm-ul led-urilor de pe placa
 void initBoardPWM(void)
 {
-	//HOMEWORK: dam enable la portul c de gpio
+	//dam enable la portul c de gpio
 	enablePeripheral(ePerif_GPIOC, eEnabled);
 
-	//HOMEWORK: setam alternate function pentru pc8 + pc9
+	//setam alternate function pentru PC8 + PC9
 	setPinAlternateFunction(GPIOC, LED_PIN_BLUE, ePin_AF2);
 	setPinAlternateFunction(GPIOC, LED_PIN_GREEN, ePin_AF2);
 
 	//enable timer 3 to use it as hardware PWM generator
 	enablePeripheral(ePerif_TIM3EN, eEnabled);
 
-	//HOMEWORK: am facut pwm-ul pentru timerul 3
-	setupPWMConfiguration(TIM3, 100, 799);
+	//am facut pwm-ul pentru timerul 3
+	setupPWMConfigurationOnboard(TIM3, 100, 799);
 }
 
 void initPWMrgbLED(void)
