@@ -9,6 +9,7 @@
 #include <timer.h>
 #include <spi.h>
 #include <max7219.h>
+#include <uart.h>
 
 //The Blue LED is on bit 8 of port C
 #define LED_PIN 8
@@ -40,6 +41,11 @@
 #define SPI1_SCK_PIN 5
 #define SPI1_MISO_PIN 6
 #define SPI1_MOSI_PIN 7
+
+//UART1 on PORTA
+#define UART2_TX 2
+#define UART2_RX 3
+
 
 void initSegmentDisplayHardwareSPI(void)
 {
@@ -157,6 +163,26 @@ void initPWMrgbLED(void)
 
 }
 
+void initUART2(void)
+{
+	//enable GPIOA peripheral to have access to PA2 PA3
+	enablePeripheral(ePerif_GPIOA, eEnabled);
+
+	//setup alternate functions for the three pins
+	//After this step, value of the three pins are
+	//no longer controlled by the OutputDataRegister like a normal GPIO pin, but by uart2
+	setPinAlternateFunction(GPIOA, UART2_TX, ePin_AF1);
+	setPinAlternateFunction(GPIOA, UART2_RX, ePin_AF1);
+
+	//enable USART2 to use it as hardware PWM generator
+	//enablePeripheral(ePerif_USART2EN, eEnabled);
+	RCC_APB1ENR |= 1<<17;
+
+
+	//setup uart peripheral
+	setupUART(9600);
+}
+
 //This is the entry-point of our application.
 //This is the "main" function for the project
 // main is actually a convention we can use any function name, so we choose projectInit
@@ -173,6 +199,8 @@ int projectInit(void)
   //initSegmentDisplay();
   initSegmentDisplaySoftwareSPI();
 
+  initUART2();
+
   int state = 0, i=0;
 
   while(1)// Repeat the following forever
@@ -187,6 +215,10 @@ int projectInit(void)
 	GPIOC->ODR &= ~(1<<LED_PIN); // clear Bit 8 (turn off LED)
     
 	busyDelayMs(LED_OFF_TIME);
+
+	txUARTch('s');
+	txUARTch(state + '0');
+	txUARTch(' ');
 
 	//we make a "game" by enabling different color transitions depending on a state variable
 	switch(state)

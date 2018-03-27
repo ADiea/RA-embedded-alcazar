@@ -15,6 +15,7 @@ Please see the document [STM32F051C8 Datasheet.pdf] section 3.7
 #define RCC_BASE 		0x40021000
 //See 6.4 in reference manual
 #define RCC_AHBENR_OFFSET 	0x14
+#define RCC_APB1ENR_OFFSET 	0x1C
 #define RCC_APB2ENR_OFFSET 	0x18
 
 //This macrodefinition means that we take the base address we add the offset and the resulting address we cast to a pointer to a unsigned int
@@ -24,7 +25,7 @@ Please see the document [STM32F051C8 Datasheet.pdf] section 3.7
 //	Now instead of writing to that adress always as *pRCC_AHBENR = value, we define a RCC_AHBENR to be #define RCC_AHBENR (*pRCC_AHBENR) 
 //	so we can write in code directly RCC_AHBENR = value 
 #define RCC_AHBENR (*((volatile unsigned int *)( RCC_BASE + RCC_AHBENR_OFFSET )))
-
+#define RCC_APB1ENR (*((volatile unsigned int *)( RCC_BASE + RCC_APB1ENR_OFFSET )))
 #define RCC_APB2ENR (*((volatile unsigned int *)( RCC_BASE + RCC_APB2ENR_OFFSET )))
 
 
@@ -41,10 +42,13 @@ typedef enum
 	ePerif_GPIOE = 21,
 	ePerif_GPIOF = 22,
 
-	//These are bits from the RCC_APB2RSTR register!
+	//These are bits from the RCC_APB2ENR register!
 	ePerif_TIM1 = 11,
 	ePerif_TIM15 = 16,
 	ePerif_SPI1EN = 12,
+
+	//These are bits from register RCC_APB1ENR
+	//ePerif_USART2EN = 17,
 
 
 } ePeripherals;

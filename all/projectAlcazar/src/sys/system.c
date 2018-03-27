@@ -23,7 +23,13 @@ void enablePeripheral(ePeripherals peripheral, eEnableState enable)
 	{
 		pRCCRegister = &RCC_APB2ENR;
 	}
+	/*else if(ePerif_USART2EN == peripheral)
+	{
+		pRCCRegister = &RCC_APB1ENR;
+	}
 	
+	*/
+
 	if(enable == eEnabled)
 	{
 		*pRCCRegister |= 1 << peripheral;
