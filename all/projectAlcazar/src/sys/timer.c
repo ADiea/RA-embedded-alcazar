@@ -95,7 +95,7 @@ void setupPWMConfigurationOnboard(volatile Timer_Type* timer,
 
 	// (3) set CCRx registers for the two channels
 	//this sets the duty cycle to 0%, permanent low signal (0) for all 2 channels
-	timer->CCR1 = timer->CCR2 = 0;
+	timer->CCR3 = timer->CCR4 = 0;
 
 	//For setting the output compare mode in CCMR register,
 	//must first clear the CCxE bits in CCER
