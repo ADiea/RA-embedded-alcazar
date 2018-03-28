@@ -10,7 +10,7 @@
  */
 void setPUPD(GPIO_Type * port, unsigned int pinNumber, ePUPDType PinPUPD)
 {
-	port->PUPDR |= PinPUPD << (2*pinNumber);
+	port->PUPDR.reg |= PinPUPD << (2*pinNumber);
 }
 
 /*
@@ -21,8 +21,8 @@ void setPinMode(volatile GPIO_Type * port, unsigned int pinNumber, ePinMode pinM
 
 	if (!port || pinNumber > 15)
 		return;
-	port->MODER &= ~( 0x3 << 2*pinNumber );// Deletes previous setting of the pin mode
-	port->MODER |= pinMode << MODERPOS(pinNumber);
+	port->MODER.reg &= ~( 0x3 << 2*pinNumber );// Deletes previous setting of the pin mode
+	port->MODER.reg |= pinMode << MODERPOS(pinNumber);
 }
 
 /*
@@ -35,11 +35,11 @@ void writePin(volatile GPIO_Type * port, unsigned int pinNumber, unsigned int va
 
 	if (value)
 	{
-		port->ODR |= (1<<pinNumber);
+		port->ODR.reg |= (1<<pinNumber);
 	}
 	else
 	{
-		port->ODR &= ~(1<<pinNumber);
+		port->ODR.reg &= ~(1<<pinNumber);
 	}
 }
 
@@ -53,7 +53,7 @@ unsigned int readPin(volatile GPIO_Type * port, unsigned int pinNumber)
 
 	unsigned int pinValue = 0;
 
-	if(port->IDR & (1<<pinNumber))
+	if(port->IDR.reg & (1<<pinNumber))
 	{
 		pinValue = 1;
 	}
@@ -74,9 +74,9 @@ void setPinAlternateFunction(volatile GPIO_Type * port, unsigned int pinNumber, 
 
 	//First configure MODER register for this pin as alternate function
 	//	clear mode bits corresponding to this pin
-	port->MODER &= ~(0x3 << MODERPOS(pinNumber));
+	port->MODER.reg &= ~(0x3 << MODERPOS(pinNumber));
 	//  set mode bits to alternate function mode
-	port->MODER |=  (ePin_AlternateFunction << MODERPOS(pinNumber));
+	port->MODER.reg|=  (ePin_AlternateFunction << MODERPOS(pinNumber));
 
 	//Next set the desired alternate function
 	//address of needed Alternate Function register (will be decided based on pin number)
@@ -86,7 +86,7 @@ void setPinAlternateFunction(volatile GPIO_Type * port, unsigned int pinNumber, 
 	if(pinNumber <= 7)
 	{
 		//pins 0-7 are controlled by AFRL (low)
-		pAFRegister = &(port->AFRL);
+		pAFRegister = &(port->AFRL.reg);
 	}
 	else
 	{
@@ -94,7 +94,7 @@ void setPinAlternateFunction(volatile GPIO_Type * port, unsigned int pinNumber, 
 		//in order to index correctly into AFRH
 		pinNumber -= 8;
 		//pins 8-15 by AFRH (high)
-		pAFRegister = &(port->AFRH);
+		pAFRegister = &(port->AFRH.reg);
 	}
 
 	//TODO set breakpoint here to see pAFRegister value which is the needed AF register address

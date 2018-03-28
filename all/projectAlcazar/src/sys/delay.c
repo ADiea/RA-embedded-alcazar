@@ -15,7 +15,7 @@
 void busyDelayMs(unsigned int ms)
 {
 	//enable timer 15
-	enablePeripheral(ePerif_TIM15, eEnabled);
+	enableAPB2Peripheral(ePerif_TIM15, eEnabled);
 
 	unsigned int value;
 
@@ -48,5 +48,5 @@ void busyDelayMs(unsigned int ms)
 		}
 	}
 	//disable timer 15
-	enablePeripheral(ePerif_TIM15, eDisabled);
+	enableAPB2Peripheral(ePerif_TIM15, eDisabled);
 }

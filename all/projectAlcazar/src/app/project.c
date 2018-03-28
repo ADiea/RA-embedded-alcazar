@@ -9,10 +9,9 @@
 #include <timer.h>
 #include <spi.h>
 #include <max7219.h>
-#include <uart.h>
+#include <usart.h>
 
-//The Blue LED is on bit 8 of port C
-#define LED_PIN 8
+
 
 //define a led on delay time of 1s = 1000ms
 #define LED_ON_TIME 100
@@ -42,9 +41,9 @@
 #define SPI1_MISO_PIN 6
 #define SPI1_MOSI_PIN 7
 
-//UART1 on PORTA
-#define UART2_TX 2
-#define UART2_RX 3
+//USART1 on PORTA
+#define USART2_TX 2
+#define USART2_RX 3
 
 
 void initSegmentDisplayHardwareSPI(void)
@@ -55,7 +54,7 @@ void initSegmentDisplayHardwareSPI(void)
 	//It then directly controls the LED display
 
 	//enable the SPI peripheral inside the MCU to help with the SPI communication
-	enablePeripheral(ePerif_SPI1EN, eEnabled);
+	enableAPB2Peripheral(ePerif_SPI1, eEnabled);
 
 	//configure pins on the MCU as special SPI pins (alternate functions)
 	//see the datasheet of STM32f0 (Table 14. Alternate functions selected through GPIOA_AFR registers for port A)
@@ -67,19 +66,19 @@ void initSegmentDisplayHardwareSPI(void)
 		PA7 SPI1_MOSI Master out slave in output the MCU will send commands Alternate function 0
 	 * */
 	//enable GPIOA peripheral to have access to PA 4,5,6,7
-	enablePeripheral(ePerif_GPIOA, eEnabled);
+	enableAHBPeripheral(ePerif_GPIOA, eEnabled);
 
 	//setPinAlternateFunction(GPIOA, SPI1_NSS_PIN, ePin_AF0);
 	setPinAlternateFunction(GPIOA, SPI1_SCK_PIN, ePin_AF0);
 	setPinAlternateFunction(GPIOA, SPI1_MISO_PIN, ePin_AF0);
 	setPinAlternateFunction(GPIOA, SPI1_MOSI_PIN, ePin_AF0);
 
-	GPIOA->MODER |= ePin_Output << MODERPOS(SPI1_SCK_PIN);
-	GPIOA->MODER |= ePin_Output << MODERPOS(SPI1_MOSI_PIN);
+	GPIOA->MODER.reg |= ePin_Output << MODERPOS(SPI1_SCK_PIN);
+	GPIOA->MODER.reg |= ePin_Output << MODERPOS(SPI1_MOSI_PIN);
 
 	//we will manually toggle the SS pin
-	GPIOA->MODER |= ePin_Output << MODERPOS(SPI1_NSS_PIN);
-	GPIOA->ODR |= (1<<SPI1_NSS_PIN);
+	GPIOA->MODER.reg |= ePin_Output << MODERPOS(SPI1_NSS_PIN);
+	GPIOA->ODR.reg |= (1<<SPI1_NSS_PIN);
 
 	//configure the SPI1 peripheral
 	initSPIMaster(SPI1);
@@ -106,7 +105,7 @@ void initSegmentDisplaySoftwareSPI(void)
 	 * */
 
 	//enable GPIOA peripheral to have access to PA 4,5,6,7
-	enablePeripheral(ePerif_GPIOA, eEnabled);
+	enableAHBPeripheral(ePerif_GPIOA, eEnabled);
 
 	//configure the GPIO pins for software SPI
 	spiSoftSetup(GPIOA, SPI1_NSS_PIN, SPI1_SCK_PIN, SPI1_MOSI_PIN, SPI1_MISO_PIN);
@@ -125,7 +124,7 @@ void initPWMrgbLED(void)
 	//TIM1_CHx channels are mapped on alternate function 2 (AF2)
 
 	//enable GPIOA peripheral to have access to PA8, PA9 and PA10
-	enablePeripheral(ePerif_GPIOA, eEnabled);
+	enableAHBPeripheral(ePerif_GPIOA, eEnabled);
 
 	//setup alternate functions for the three pins
 	//After this step, value of the three pins are
@@ -135,7 +134,7 @@ void initPWMrgbLED(void)
 	setPinAlternateFunction(GPIOA, LED_RGB_BLUE, ePin_AF2);
 
 	//enable timer 1 to use it as hardware PWM generator
-	enablePeripheral(ePerif_TIM1, eEnabled);
+	enableAPB2Peripheral(ePerif_TIM1, eEnabled);
 
 	//we setup pwm on first 3 channels for timer1.
 	//Please see function implementation in timer.c
@@ -160,24 +159,22 @@ void initPWMrgbLED(void)
 
 }
 
-void initUART2(void)
+void initUSART2(void)
 {
 	//enable GPIOA peripheral to have access to PA2 PA3
-	enablePeripheral(ePerif_GPIOA, eEnabled);
+	enableAHBPeripheral(ePerif_GPIOA, eEnabled);
 
 	//setup alternate functions for the three pins
 	//After this step, value of the three pins are
-	//no longer controlled by the OutputDataRegister like a normal GPIO pin, but by uart2
-	setPinAlternateFunction(GPIOA, UART2_TX, ePin_AF1);
-	setPinAlternateFunction(GPIOA, UART2_RX, ePin_AF1);
+	//no longer controlled by the OutputDataRegister like a normal GPIO pin, but by usart2
+	setPinAlternateFunction(GPIOA, USART2_TX, ePin_AF1);
+	setPinAlternateFunction(GPIOA, USART2_RX, ePin_AF1);
 
 	//enable USART2 to use it as hardware PWM generator
-	//enablePeripheral(ePerif_USART2EN, eEnabled);
-	RCC_APB1ENR |= 1<<17;
+	enableAPB1Peripheral(ePerif_USART2, eEnabled);
 
-
-	//setup uart peripheral
-	setupUART(9600);
+	//setup usart peripheral
+	setupUSART(9600);
 }
 
 //This is the entry-point of our application.
@@ -185,22 +182,16 @@ void initUART2(void)
 // main is actually a convention we can use any function name, so we choose projectInit
 int projectInit(void)
 {
-  enablePeripheral(ePerif_GPIOC, eEnabled);
-<<<<<<< HEAD
+  enableAHBPeripheral(ePerif_GPIOC, eEnabled);
 
-  //TODO: replace with setPinMode(GPIOC, LED_PIN, ePin_Output);
-  GPIOC->MODER |= ePin_Output << MODERPOS(LED_PIN); // Make bit 8 an output on GPIO C
-  GPIOC->ODR |= (1<<LED_PIN);// set Bit 8 (turn on LED)
-=======
   setPinMode(GPIOC, LED_PIN, ePin_Output);  // Make bit 8 an output on GPIO C
->>>>>>> 2dadecdff4332c38f0da99cd99a17ca707ed1f88
   
   initPWMrgbLED();
 
   //initSegmentDisplay();
   initSegmentDisplaySoftwareSPI();
 
-  initUART2();
+  initUSART2();
 
   int state = 0, i=0;
 
@@ -212,9 +203,9 @@ int projectInit(void)
     writePin(GPIOC, LED_PIN, 0);  // clear Bit 8 (turn off LED)
 	busyDelayMs(LED_OFF_TIME);
 
-	txUARTch('s');
-	txUARTch(state + '0');
-	txUARTch(' ');
+	txUSARTch('s');
+	txUSARTch(state + '0');
+	txUSARTch(' ');
 
 	//we make a "game" by enabling different color transitions depending on a state variable
 	switch(state)
