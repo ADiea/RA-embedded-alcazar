@@ -12,12 +12,7 @@ void enablePeripheralRCC_AHBENR(ePeripheralsRCC_AHBENR peripheral, eEnableState 
 {
 	volatile unsigned int *pRCCRegister;
 
-	if(	ePerif_GPIOA == peripheral || ePerif_GPIOB == peripheral ||
-		ePerif_GPIOC == peripheral || ePerif_GPIOD == peripheral ||
-		ePerif_GPIOE == peripheral || ePerif_GPIOF == peripheral )
-	{
-		pRCCRegister = &RCC_AHBENR;
-	}
+	pRCCRegister = &RCC_AHBENR;
 	
 	if(enable == eEnabled)
 	{
@@ -34,14 +29,7 @@ void enablePeripheralRCC_APB1ENR(ePeripheralsRCC_APB1ENR peripheral, eEnableStat
 {
 	volatile unsigned int *pRCCRegister2;
 
-	if(ePerif_USART2EN == peripheral)
-	{
-		pRCCRegister2 = &RCC_APB1ENR;
-	}
-	else if(ePerif_TIM3EN == peripheral)
-	{
-		pRCCRegister2 = &RCC_APB1ENR;
-	}
+	pRCCRegister2 = &RCC_APB1ENR;
 
 	if(enable == eEnabled)
 	{
@@ -58,18 +46,7 @@ void enablePeripheralRCC_APB2ENR(ePeripheralsRCC_APB2ENR peripheral, eEnableStat
 {
 	volatile unsigned int *pRCCRegister3;
 
-	if(ePerif_TIM1 == peripheral)
-	{
-		pRCCRegister3 = &RCC_APB2ENR;
-	}
-	else if(ePerif_SPI1EN == peripheral)
-	{
-		pRCCRegister3 = &RCC_APB2ENR;
-	}
-	else if(ePerif_TIM15 == peripheral)
-	{
-		pRCCRegister3 = &RCC_APB2ENR;
-	}
+	pRCCRegister3 = &RCC_APB2ENR;
 
 	if(enable == eEnabled)
 	{
