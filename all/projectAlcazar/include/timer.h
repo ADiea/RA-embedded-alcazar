@@ -10,6 +10,7 @@
 
 //see 2.2.2 in reference manual
 #define TIM1_BASE 0x40012C00
+#define TIM3_BASE 0x40000400
 #define TIM15_BASE 0x40014000
 
 //! Because timers are not all the same, some offer slightly different functions
@@ -51,6 +52,7 @@ typedef struct
 }Timer_Type;
 
 #define TIM1 ((volatile Timer_Type*)TIM1_BASE)
+#define TIM3 ((volatile Timer_Type*)TIM3_BASE)
 #define TIM15 ((volatile Timer_Type*)TIM15_BASE)
 
 typedef enum
@@ -107,6 +109,10 @@ unsigned int getTimerValue(volatile Timer_Type* timer);
  *
  * */
 void setupPWMConfiguration(volatile Timer_Type* timer,
+							unsigned int pwmPeriodCounter,
+							unsigned int pwmPeriodPrescaler);
+
+void setupPWMConfigurationOnboard(volatile Timer_Type* timer,
 							unsigned int pwmPeriodCounter,
 							unsigned int pwmPeriodPrescaler);
 

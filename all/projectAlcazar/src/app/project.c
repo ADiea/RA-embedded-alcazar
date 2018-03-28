@@ -12,7 +12,8 @@
 #include <uart.h>
 
 //The Blue LED is on bit 8 of port C
-#define LED_PIN 8
+#define LED_PIN_BLUE 8
+#define LED_PIN_GREEN 9
 
 //define a led on delay time of 1s = 1000ms
 #define LED_ON_TIME 100
@@ -35,6 +36,10 @@
 #define LED_RGB_GREEN_CH 1
 #define LED_RGB_BLUE_CH 0
 
+//HOMEWORK: PC8 + PC9 sunt definiti pe cananlul TIM3 (n-1 in functie de canal)
+#define LED_PIN_BLUE_CH 2
+#define LED_PIN_GREEN_CH 3
+
 //These pins are alternate function for SPI1 peripheral on port A
 //we will not use these pins directly, the SPI peripheral will use them for communication
 #define SPI1_NSS_PIN 4
@@ -46,6 +51,23 @@
 #define UART2_TX 2
 #define UART2_RX 3
 
+//HOMEWORK: functia pentru pwm-ul led-urilor de pe placa
+void initBoardPWM(void)
+{
+	//dam enable la portul c de gpio
+	enablePeripheralRCC_AHBENR(ePerif_GPIOC, eEnabled);
+
+	//setam alternate function pentru PC8 + PC9
+	setPinAlternateFunction(GPIOC, LED_PIN_BLUE, ePin_AF2);
+	setPinAlternateFunction(GPIOC, LED_PIN_GREEN, ePin_AF2);
+
+	//enable timer 3 to use it as hardware PWM generator
+	enablePeripheralRCC_APB1ENR(ePerif_TIM3EN, eEnabled);
+
+	//am facut pwm-ul pentru timerul 3
+	setupPWMConfigurationOnboard(TIM3, 100, 799);
+}
+
 
 void initSegmentDisplayHardwareSPI(void)
 {
@@ -55,7 +77,7 @@ void initSegmentDisplayHardwareSPI(void)
 	//It then directly controls the LED display
 
 	//enable the SPI peripheral inside the MCU to help with the SPI communication
-	enablePeripheral(ePerif_SPI1EN, eEnabled);
+	enablePeripheralRCC_APB2ENR(ePerif_SPI1EN, eEnabled);
 
 	//configure pins on the MCU as special SPI pins (alternate functions)
 	//see the datasheet of STM32f0 (Table 14. Alternate functions selected through GPIOA_AFR registers for port A)
@@ -67,7 +89,7 @@ void initSegmentDisplayHardwareSPI(void)
 		PA7 SPI1_MOSI Master out slave in output the MCU will send commands Alternate function 0
 	 * */
 	//enable GPIOA peripheral to have access to PA 4,5,6,7
-	enablePeripheral(ePerif_GPIOA, eEnabled);
+	enablePeripheralRCC_AHBENR(ePerif_GPIOA, eEnabled);
 
 	//setPinAlternateFunction(GPIOA, SPI1_NSS_PIN, ePin_AF0);
 	setPinAlternateFunction(GPIOA, SPI1_SCK_PIN, ePin_AF0);
@@ -106,7 +128,7 @@ void initSegmentDisplaySoftwareSPI(void)
 	 * */
 
 	//enable GPIOA peripheral to have access to PA 4,5,6,7
-	enablePeripheral(ePerif_GPIOA, eEnabled);
+	enablePeripheralRCC_AHBENR(ePerif_GPIOA, eEnabled);
 
 	//configure the GPIO pins for software SPI
 	spiSoftSetup(GPIOA, SPI1_NSS_PIN, SPI1_SCK_PIN, SPI1_MOSI_PIN, SPI1_MISO_PIN);
@@ -125,7 +147,7 @@ void initPWMrgbLED(void)
 	//TIM1_CHx channels are mapped on alternate function 2 (AF2)
 
 	//enable GPIOA peripheral to have access to PA8, PA9 and PA10
-	enablePeripheral(ePerif_GPIOA, eEnabled);
+	enablePeripheralRCC_AHBENR(ePerif_GPIOA, eEnabled);
 
 	//setup alternate functions for the three pins
 	//After this step, value of the three pins are
@@ -135,7 +157,7 @@ void initPWMrgbLED(void)
 	setPinAlternateFunction(GPIOA, LED_RGB_BLUE, ePin_AF2);
 
 	//enable timer 1 to use it as hardware PWM generator
-	enablePeripheral(ePerif_TIM1, eEnabled);
+	enablePeripheralRCC_APB2ENR(ePerif_TIM1, eEnabled);
 
 	//we setup pwm on first 3 channels for timer1.
 	//Please see function implementation in timer.c
@@ -166,7 +188,7 @@ void initPWMrgbLED(void)
 void initUART2(void)
 {
 	//enable GPIOA peripheral to have access to PA2 PA3
-	enablePeripheral(ePerif_GPIOA, eEnabled);
+	enablePeripheralRCC_AHBENR(ePerif_GPIOA, eEnabled);
 
 	//setup alternate functions for the three pins
 	//After this step, value of the three pins are
@@ -188,13 +210,9 @@ void initUART2(void)
 // main is actually a convention we can use any function name, so we choose projectInit
 int projectInit(void)
 {
-  enablePeripheral(ePerif_GPIOC, eEnabled);
-
-  //TODO: replace with setPinMode(GPIOC, LED_PIN, ePin_Output);
-  GPIOC->MODER |= ePin_Output << MODERPOS(LED_PIN); // Make bit 8 an output on GPIO C
-  GPIOC->ODR |= (1<<LED_PIN);// set Bit 8 (turn on LED)
   
   initPWMrgbLED();
+  initBoardPWM();
 
   //initSegmentDisplay();
   initSegmentDisplaySoftwareSPI();
@@ -207,12 +225,12 @@ int projectInit(void)
   {
 
 	//TODO: replace with writePin(GPIOC, LED_PIN, 1);
-    GPIOC->ODR |= (1<<LED_PIN);// set Bit 8 (turn on LED)
+    //GPIOC->ODR |= (1<<LED_PIN_BLUE);// set Bit 8 (turn on LED)
     
     busyDelayMs(LED_ON_TIME);
     
 	//TODO: replace with writePin(GPIOC, LED_PIN, 0);
-	GPIOC->ODR &= ~(1<<LED_PIN); // clear Bit 8 (turn off LED)
+	//GPIOC->ODR &= ~(1<<LED_PIN_BLUE); // clear Bit 8 (turn off LED)
     
 	busyDelayMs(LED_OFF_TIME);
 
@@ -227,6 +245,9 @@ int projectInit(void)
 			for(i=0; i<=100; i++)
 			{
 				setPWMDuty(TIM1, LED_RGB_RED_CH, i);
+				setPWMDuty(TIM3, LED_PIN_BLUE_CH, i);
+				setPWMDuty(TIM3, LED_PIN_GREEN_CH, i);
+
 				busyDelayMs(10);
 			}
 			break;
@@ -250,6 +271,8 @@ int projectInit(void)
 				setPWMDuty(TIM1, LED_RGB_RED_CH, i);
 				setPWMDuty(TIM1, LED_RGB_GREEN_CH, i);
 				setPWMDuty(TIM1, LED_RGB_BLUE_CH, i);
+				setPWMDuty(TIM3, LED_PIN_BLUE_CH, i);
+				setPWMDuty(TIM3, LED_PIN_GREEN_CH, i);
 				busyDelayMs(50);
 			}
 			break;

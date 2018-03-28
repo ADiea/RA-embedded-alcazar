@@ -41,17 +41,22 @@ typedef enum
 	ePerif_GPIOD = 20,
 	ePerif_GPIOE = 21,
 	ePerif_GPIOF = 22,
+} ePeripheralsRCC_AHBENR;
 
+typedef enum
+{
+	//These are bits from register RCC_APB1ENR
+	ePerif_TIM3EN = 1,
+	ePerif_USART2EN = 17
+} ePeripheralsRCC_APB1ENR;
+
+typedef enum
+{
 	//These are bits from the RCC_APB2ENR register!
 	ePerif_TIM1 = 11,
-	ePerif_TIM15 = 16,
 	ePerif_SPI1EN = 12,
-
-	//These are bits from register RCC_APB1ENR
-	//ePerif_USART2EN = 17,
-
-
-} ePeripherals;
+	ePerif_TIM15 = 16
+} ePeripheralsRCC_APB2ENR;
 
 //define enable/disable values
 typedef enum
@@ -61,6 +66,8 @@ typedef enum
 } eEnableState;
 
 //Enable a specific peripheral
-void enablePeripheral(ePeripherals peripheral, eEnableState enable);
+void enablePeripheralRCC_AHBENR(ePeripheralsRCC_AHBENR peripheral, eEnableState enable);
+void enablePeripheralRCC_APB1ENR(ePeripheralsRCC_APB1ENR peripheral, eEnableState enable);
+void enablePeripheralRCC_APB2ENR(ePeripheralsRCC_APB2ENR peripheral, eEnableState enable);
 
 #endif // SYSTEM__H //
