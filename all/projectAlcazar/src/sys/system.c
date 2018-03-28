@@ -8,28 +8,12 @@
 //declare the extern projectInit() function. Will be called after system is init
 extern void projectInit();
 
-void enablePeripheral(ePeripherals peripheral, eEnableState enable)
+void enablePeripheralRCC_AHBENR(ePeripheralsRCC_AHBENR peripheral, eEnableState enable)
 {
 	volatile unsigned int *pRCCRegister;
 
-	if(	ePerif_GPIOA == peripheral || ePerif_GPIOB == peripheral ||
-		ePerif_GPIOC == peripheral || ePerif_GPIOD == peripheral ||
-		ePerif_GPIOE == peripheral || ePerif_GPIOF == peripheral )
-	{
-		pRCCRegister = &RCC_AHBENR;
-	}
-	else if(ePerif_TIM1 == peripheral || ePerif_TIM15 == peripheral ||
-			ePerif_SPI1EN == peripheral)
-	{
-		pRCCRegister = &RCC_APB2ENR;
-	}
-	/*else if(ePerif_USART2EN == peripheral)
-	{
-		pRCCRegister = &RCC_APB1ENR;
-	}
+	pRCCRegister = &RCC_AHBENR;
 	
-	*/
-
 	if(enable == eEnabled)
 	{
 		*pRCCRegister |= 1 << peripheral;
@@ -39,6 +23,41 @@ void enablePeripheral(ePeripherals peripheral, eEnableState enable)
 		*pRCCRegister &= ~(1 << peripheral);
 	}
 }
+
+
+void enablePeripheralRCC_APB1ENR(ePeripheralsRCC_APB1ENR peripheral, eEnableState enable)
+{
+	volatile unsigned int *pRCCRegister2;
+
+	pRCCRegister2 = &RCC_APB1ENR;
+
+	if(enable == eEnabled)
+	{
+		*pRCCRegister2 |= 1 << peripheral;
+	}
+	else
+	{
+		*pRCCRegister2 &= ~(1 << peripheral);
+	}
+}
+
+
+void enablePeripheralRCC_APB2ENR(ePeripheralsRCC_APB2ENR peripheral, eEnableState enable)
+{
+	volatile unsigned int *pRCCRegister3;
+
+	pRCCRegister3 = &RCC_APB2ENR;
+
+	if(enable == eEnabled)
+	{
+		*pRCCRegister3 |= 1 << peripheral;
+	}
+	else
+	{
+		*pRCCRegister3 &= ~(1 << peripheral);
+	}
+}
+
 
 //rename function to main so the debugger sets the breakpoint correctly
 void main()
