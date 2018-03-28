@@ -10,6 +10,7 @@
 #include <spi.h>
 #include <max7219.h>
 #include <uart.h>
+#include <adc.h>
 
 //The Blue LED is on bit 8 of port C
 #define LED_PIN_BLUE 8
@@ -19,7 +20,7 @@
 #define LED_ON_TIME 100
 
 //define a led on delay time of 0.5s = 500ms
-#define LED_OFF_TIME 500
+#define LED_OFF_TIME 100
 
 //let's define how to connect the RGB led pins to the MCU
 //because we decided we'll use TIMER 1 for pwm generation,
@@ -50,6 +51,9 @@
 //UART1 on PORTA
 #define UART2_TX 2
 #define UART2_RX 3
+
+//ADC - will convert voltage on PA0
+#define ADC_PIN 0
 
 //HOMEWORK: Emabling the PWM for the onboard LEDs
 void initBoardPWM(void)
@@ -205,6 +209,80 @@ void initUART2(void)
 	setupUART(9600);
 }
 
+void initADC()
+{
+	//enable peripheral A
+	enablePeripheralRCC_AHBENR(ePerif_GPIOA, eEnabled);
+
+	//set pin as anaog!
+	GPIOA->MODER |= ePin_Analog << MODERPOS(ADC_PIN);
+
+	//enable ADC peripheral
+	enablePeripheralRCC_APB2ENR(ePerif_ADC, eEnabled);
+
+	//setup ADC
+	setupADC();
+}
+
+//we cannot use simple / in our project like c = a/b
+//undefined reference to `__aeabi_uidiv' => we have to link with a math library or a libc
+//undefined reference to `__aeabi_uidivmod' => we have to link with a math library or a libc
+//we must link with external library or make custom div and mod functions...we'll make custom div and mod fucntions:)
+
+//returns result of a/b
+
+int div(int a, int b)
+{
+	int result = 0;
+
+	while(a>=b)
+	{
+		++result;
+		a -= b;
+	}
+	return result;
+}
+
+//returns result of a%b
+int mod(int a, int b)
+{
+	if(a<b)
+		return a;
+
+	while(a>=b)
+	{
+		a -= b;
+	}
+
+	//in a we have the remainder
+	return a;
+}
+
+
+//convert a value into sepparate ints corrsponding to digit position
+//very simple implementation
+void intToString(unsigned int value, char *buffer)
+{
+	//use debugger to see how function works
+	int i;
+	for(i=0; i<8; i++)
+	{
+		buffer[i] = mod(value, 10);
+		value = div(value, 10);
+	}
+}
+
+//update the display with values from buffer
+void updateDisplayBuffer(char *buffer)
+{
+	int i;
+	clearDisplay();
+	for(i=0;i<8;i++)
+	{
+		putChar(buffer[i], i);
+	}
+}
+
 //This is the entry-point of our application.
 //This is the "main" function for the project
 // main is actually a convention we can use any function name, so we choose projectInit
@@ -215,12 +293,19 @@ int projectInit(void)
   initBoardPWM();
   RCC_APB1ENR |= 1<<1;
 
+  //setup the ADC
+  initADC();
+
   //initSegmentDisplay();
   initSegmentDisplaySoftwareSPI();
 
   initUART2();
 
   int state = 0, i=0;
+
+  unsigned int ADC_value = 0;
+
+  char displayBuffer[8];
 
   while(1)// Repeat the following forever
   {
@@ -234,6 +319,12 @@ int projectInit(void)
 	//GPIOC->ODR &= ~(1<<LED_PIN_BLUE); // clear Bit 8 (turn off LED)
     
 	busyDelayMs(LED_OFF_TIME);
+
+	ADC_value = convertADC();
+
+	intToString(ADC_value, (char*) displayBuffer);
+	updateDisplayBuffer((char*) displayBuffer);
+
 
 	txUARTch('s');
 	txUARTch(state + '0');
@@ -274,7 +365,7 @@ int projectInit(void)
 				setPWMDuty(TIM1, LED_RGB_BLUE_CH, i);
 				setPWMDuty(TIM3, LED_PIN_BLUE_CH, i);
 				setPWMDuty(TIM3, LED_PIN_GREEN_CH, i);
-				busyDelayMs(50);
+				busyDelayMs(10);
 			}
 			break;
 		case 4:
@@ -290,23 +381,16 @@ int projectInit(void)
 			{
 				setPWMDuty(TIM1, LED_RGB_GREEN_CH, i);
 				setPWMDuty(TIM1, LED_RGB_BLUE_CH, 100 - i);
-				busyDelayMs(30);
+				busyDelayMs(10);
 			}
 			break;
 		default:
 			//reset state to start over the game
 			state = -1;
-
-			//also clear the display
-			clearDisplay();
 			break;
 	};
 
 	state++;
-
-	//display current state to the MAX7219 connected display to position state
-	putChar((char)state, //print state value
-				(unsigned char)state); //print it to the 'state' position
 
   }
   

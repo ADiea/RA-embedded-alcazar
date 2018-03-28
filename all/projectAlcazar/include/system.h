@@ -53,6 +53,7 @@ typedef enum
 typedef enum
 {
 	//These are bits from the RCC_APB2ENR register!
+	ePerif_ADC = 9,
 	ePerif_TIM1 = 11,
 	ePerif_SPI1EN = 12,
 	ePerif_TIM15 = 16
