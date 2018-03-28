@@ -141,14 +141,11 @@ void initPWMrgbLED(void)
 	//Please see function implementation in timer.c
 	/*
 	 Prescaler is set to 799 clock is divided by 799+1 = 800 => timer counts with 10kHz frequency
-
 	 We set the autoload value to 100 means that counter counts to 100 then restarts from zero
 	 If timer counts with 10kHz, means that timer counts to 100 once every 10ms, or 100 times per second
 	 This means that PWM period is 0.01s, or we can say PWM frequency is 1/0.01s = 100Hz
-
 	 The duty cycle is from zero to ARR and we set the ARR to 100 so we can directly set the cycle
 	 from 0% to 100% by setting the value from 0 to 100
-
 	 Initially dutycycle is set to zero, so all 3 channels will be 0
 	 */
 	setupPWMConfiguration(TIM1, 100, 799);
@@ -189,10 +186,14 @@ void initUART2(void)
 int projectInit(void)
 {
   enablePeripheral(ePerif_GPIOC, eEnabled);
+<<<<<<< HEAD
 
   //TODO: replace with setPinMode(GPIOC, LED_PIN, ePin_Output);
   GPIOC->MODER |= ePin_Output << MODERPOS(LED_PIN); // Make bit 8 an output on GPIO C
   GPIOC->ODR |= (1<<LED_PIN);// set Bit 8 (turn on LED)
+=======
+  setPinMode(GPIOC, LED_PIN, ePin_Output);  // Make bit 8 an output on GPIO C
+>>>>>>> 2dadecdff4332c38f0da99cd99a17ca707ed1f88
   
   initPWMrgbLED();
 
@@ -205,15 +206,10 @@ int projectInit(void)
 
   while(1)// Repeat the following forever
   {
-
-	//TODO: replace with writePin(GPIOC, LED_PIN, 1);
-    GPIOC->ODR |= (1<<LED_PIN);// set Bit 8 (turn on LED)
-    
+	writePin(GPIOC, LED_PIN, 1); // set Bit 8 (turn on LED)
     busyDelayMs(LED_ON_TIME);
     
-	//TODO: replace with writePin(GPIOC, LED_PIN, 0);
-	GPIOC->ODR &= ~(1<<LED_PIN); // clear Bit 8 (turn off LED)
-    
+    writePin(GPIOC, LED_PIN, 0);  // clear Bit 8 (turn off LED)
 	busyDelayMs(LED_OFF_TIME);
 
 	txUARTch('s');

@@ -6,10 +6,19 @@
 #include <gpio.h>
 
 /*
+ * Sets the pin Pull-up Pull-Down
+ */
+void setPUPD(GPIO_Type * port, unsigned int pinNumber, ePUPDType PinPUPD)
+{
+	port->PUPDR |= PinPUPD << (2*pinNumber);
+}
+
+/*
  * Sets the pin "pinNumber" of port "port" mode
  * */
 void setPinMode(volatile GPIO_Type * port, unsigned int pinNumber, ePinMode pinMode)
 {
+
 	if (!port || pinNumber > 15)
 		return;
 	port->MODER &= ~( 0x3 << 2*pinNumber );// Deletes previous setting of the pin mode
