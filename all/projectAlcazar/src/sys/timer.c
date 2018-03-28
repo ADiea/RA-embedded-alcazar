@@ -125,12 +125,12 @@ void setupPWMConfigurationOnboard(volatile Timer_Type* timer,
 	//so that we end up modifying bits 15 - 8
 
 	// (4) set the capture and compare mode registers for our two channels
-	timer->CCMR1 =  (TIM_MODE_PWM1 << TIM_OCxM | 1 << TIM_OCxPE) << 8 |  //configuration for channel 4
+	timer->CCMR2 =  (TIM_MODE_PWM1 << TIM_OCxM | 1 << TIM_OCxPE) << 8 |  //configuration for channel 4
 					(TIM_MODE_PWM1 << TIM_OCxM | 1 << TIM_OCxPE);      //configuration for channel 3
 
 
-	// (5) enable three channels with normal polarity. see 17.4.9
-	timer->CCER = 1<<TIM_CC1E | 1<<TIM_CC2E;
+	// (5) enable two channels with normal polarity. see 17.4.9
+	timer->CCER = 1<<TIM_CC3E | 1<<TIM_CC4E;
 
 	// (6) Main output enable see 17.4.18
 	//HOMEWORK: TIM3 nu are registrul BDTR ???

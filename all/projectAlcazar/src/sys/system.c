@@ -60,15 +60,15 @@ void enablePeripheralRCC_APB2ENR(ePeripheralsRCC_APB2ENR peripheral, eEnableStat
 
 	if(ePerif_TIM1 == peripheral)
 	{
-		pRCCRegister3 = &RCC_APB1ENR;
+		pRCCRegister3 = &RCC_APB2ENR;
 	}
 	else if(ePerif_SPI1EN == peripheral)
 	{
-		pRCCRegister3 = &RCC_APB1ENR;
+		pRCCRegister3 = &RCC_APB2ENR;
 	}
 	else if(ePerif_TIM15 == peripheral)
 	{
-		pRCCRegister3 = &RCC_APB1ENR;
+		pRCCRegister3 = &RCC_APB2ENR;
 	}
 
 	if(enable == eEnabled)

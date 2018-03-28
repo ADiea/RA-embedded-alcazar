@@ -36,7 +36,7 @@
 #define LED_RGB_GREEN_CH 1
 #define LED_RGB_BLUE_CH 0
 
-//HOMEWORK: PC8 + PC9 sunt definiti pe cananlul TIM3 (n-1 in functie de canal)
+//HOMEWORK: PC8 + PC9 can use the TIM3
 #define LED_PIN_BLUE_CH 2
 #define LED_PIN_GREEN_CH 3
 
@@ -51,20 +51,20 @@
 #define UART2_TX 2
 #define UART2_RX 3
 
-//HOMEWORK: functia pentru pwm-ul led-urilor de pe placa
+//HOMEWORK: Emabling the PWM for the onboard LEDs
 void initBoardPWM(void)
 {
-	//dam enable la portul c de gpio
+	//eanbling the GPIOC
 	enablePeripheralRCC_AHBENR(ePerif_GPIOC, eEnabled);
 
-	//setam alternate function pentru PC8 + PC9
-	setPinAlternateFunction(GPIOC, LED_PIN_BLUE, ePin_AF2);
-	setPinAlternateFunction(GPIOC, LED_PIN_GREEN, ePin_AF2);
+	//Setting up AF for PC8 + PC9
+	setPinAlternateFunction(GPIOC, LED_PIN_BLUE, ePin_AF0);
+	setPinAlternateFunction(GPIOC, LED_PIN_GREEN, ePin_AF0);
 
-	//enable timer 3 to use it as hardware PWM generator
+	//Enable TIM3 as PWM generator
 	enablePeripheralRCC_APB1ENR(ePerif_TIM3EN, eEnabled);
 
-	//am facut pwm-ul pentru timerul 3
+	//Set PWM signal for TIM3
 	setupPWMConfigurationOnboard(TIM3, 100, 799);
 }
 
@@ -213,6 +213,7 @@ int projectInit(void)
   
   initPWMrgbLED();
   initBoardPWM();
+  RCC_APB1ENR |= 1<<1;
 
   //initSegmentDisplay();
   initSegmentDisplaySoftwareSPI();
