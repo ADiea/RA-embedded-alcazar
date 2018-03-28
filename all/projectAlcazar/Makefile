@@ -47,7 +47,7 @@ ASFLAGS = -mcpu=cortex-m0 -mthumb -g
 
 # List the object files involved in this project. They will be located in the out folder
 OBJS =	out/startup.o out/project.o out/gpio.o out/spi.o out/system.o out/timer.o \
-		out/delay.o out/interrupts.o out/max7219.o out/spiSoft.o out/usart.o
+		out/delay.o out/interrupts.o out/max7219.o out/spiSoft.o out/usart.o out/adc.o
 
 #A linker script file informs the linker of the memory layout of the architecture so that the linker can correctly create the final binary file. 
 #See the file for additional details
@@ -89,6 +89,8 @@ out/max7219.o: src/sys/max7219.c
 out/spiSoft.o: src/sys/spiSoft.c
 	$(CC) -c $(CCFLAGS) $< -o $@
 out/usart.o: src/sys/usart.c
+	$(CC) -c $(CCFLAGS) $< -o $@
+out/adc.o: src/sys/adc.c
 	$(CC) -c $(CCFLAGS) $< -o $@
 
 # The object file startup.o depends on startup.s => startup.s is assembled to make startup.o

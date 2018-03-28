@@ -8,9 +8,9 @@
 #ifndef INCLUDE_BOARD_H_
 #define INCLUDE_BOARD_H_
 
-
-#define __MSB_FIRST__ false
 typedef unsigned int uint32_t;
+//typedef unsigned short uint16_t;
+//typedef unsigned char uint8_t;
 
 //The Blue LED is on bit 8 of port C
 #define LED_PIN 8
