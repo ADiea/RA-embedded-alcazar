@@ -26,8 +26,14 @@ void initMAX7219Display(volatile SPI_Type* spiToBeUsed)
 	//send commands to setup the display the way we want
 	setIntensity(MAX7219_MAX_INTENSITY);
 	setScanLimit(7);// display all 8 digits
+
+	//set decode mode for using internal font
 	setDecodeMode(eDecode_allCharactersInternalFont);
 	clearDisplay();
+
+	//set decode mode for using custom font
+	//setDecodeMode(eDecode_allCharactersCustomFont);
+	//clearDisplayCustomFont();
 
 	//enable the display
 	enableDisplay(eDisplay_Enabled);
@@ -114,4 +120,18 @@ void clearDisplay(void)
 	putChar(MAX7219_BLANK, 5);
 	putChar(MAX7219_BLANK, 6);
 	putChar(MAX7219_BLANK, 7);
+}
+
+//clear the display in custom font decode mode
+//by setting all bits to 0
+void clearDisplayCustomFont(void)
+{
+	putChar(0, 0);
+	putChar(0, 1);
+	putChar(0, 2);
+	putChar(0, 3);
+	putChar(0, 4);
+	putChar(0, 5);
+	putChar(0, 6);
+	putChar(0, 7);
 }

@@ -66,4 +66,7 @@ void setDecodeMode(eDisplayDecodeMode decodeMode);
 //clear the display by showing only blank characters
 void clearDisplay(void);
 
+//clear the display in custom font decode mode
+void clearDisplayCustomFont(void);
+
 #endif /*MAX7219_H*/
