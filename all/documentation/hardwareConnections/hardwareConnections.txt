@@ -1,0 +1,12 @@
+RBG LED
+	red -> PA10
+	green -> PA9
+	blue ->PA8
+	black -> GND
+
+SPI display MAX7219
+	VCC -> 5V
+	GND -> GND
+	DIN -> PA7
+	CS -> PA5
+	CLK -> PA4
