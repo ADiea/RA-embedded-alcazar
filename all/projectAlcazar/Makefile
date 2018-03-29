@@ -8,7 +8,7 @@
 
 #Set WINDOWS variable default 0; ?= means set if not already set; if you type in console "make all WINDOWS=1" you will set WINDOWS to 1 from outside
 #For windows users set this in eclipse, build targets.
-WINDOWS ?= 0
+WINDOWS ?= 1
 MACOSX ?= 0
 
 ifeq ($(WINDOWS),1)
@@ -43,11 +43,11 @@ endif
 
 #These are the flags or parameters we will pass to the compiler and assembler.
 CCFLAGS = -mcpu=cortex-m0 -mthumb -g -Iinclude/
-ASFLAGS = -mcpu=cortex-m0 -mthumb -g 
+ASFLAGS = -mcpu=cortex-m0 -mthumb -g
 
 # List the object files involved in this project. They will be located in the out folder
 OBJS =	out/startup.o out/project.o out/gpio.o out/spi.o out/system.o out/timer.o \
-		out/delay.o out/interrupts.o out/max7219.o out/spiSoft.o out/uart.o out/adc.o
+		out/delay.o out/interrupts.o out/max7219.o out/spiSoft.o out/usart.o out/adc.o
 
 #A linker script file informs the linker of the memory layout of the architecture so that the linker can correctly create the final binary file. 
 #See the file for additional details
@@ -64,6 +64,7 @@ main.elf : $(OBJS)
 	$(LD) $(OBJS) -T $(LINKER_SCRIPT) --cref -Map out/main.map -nostartfiles -o out/main.elf
 	$(OBJCOPY) -O ihex out/main.elf out/main.hex
 	$(OBJCOPY) -O binary out/main.elf out/main.bin
+	$(OBJDUMP) -D out/main.elf > out/main.lst
 #	$(OBJDUMP) -St out/main.elf > out/main.lst
 	$(SIZE) out/main.elf
 
@@ -87,7 +88,7 @@ out/max7219.o: src/sys/max7219.c
 	$(CC) -c $(CCFLAGS) $< -o $@
 out/spiSoft.o: src/sys/spiSoft.c
 	$(CC) -c $(CCFLAGS) $< -o $@
-out/uart.o: src/sys/uart.c
+out/usart.o: src/sys/usart.c
 	$(CC) -c $(CCFLAGS) $< -o $@
 out/adc.o: src/sys/adc.c
 	$(CC) -c $(CCFLAGS) $< -o $@

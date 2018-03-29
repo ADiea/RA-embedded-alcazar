@@ -9,12 +9,13 @@
 #include <timer.h>
 #include <spi.h>
 #include <max7219.h>
-#include <uart.h>
+#include <usart.h>
 #include <adc.h>
 
 //The Blue LED is on bit 8 of port C
 #define LED_PIN_BLUE 8
 #define LED_PIN_GREEN 9
+
 
 //define a led on delay time of 1s = 1000ms
 #define LED_ON_TIME 100
@@ -48,9 +49,9 @@
 #define SPI1_MISO_PIN 6
 #define SPI1_MOSI_PIN 7
 
-//UART1 on PORTA
-#define UART2_TX 2
-#define UART2_RX 3
+//USART1 on PORTA
+#define USART2_TX 2
+#define USART2_RX 3
 
 //ADC - will convert voltage on PA0
 #define ADC_PIN 0
@@ -59,14 +60,14 @@
 void initBoardPWM(void)
 {
 	//eanbling the GPIOC
-	enablePeripheralRCC_AHBENR(ePerif_GPIOC, eEnabled);
+	enableAHBPeripheral(ePerif_GPIOC, eEnabled);
 
 	//Setting up AF for PC8 + PC9
 	setPinAlternateFunction(GPIOC, LED_PIN_BLUE, ePin_AF0);
 	setPinAlternateFunction(GPIOC, LED_PIN_GREEN, ePin_AF0);
 
 	//Enable TIM3 as PWM generator
-	enablePeripheralRCC_APB1ENR(ePerif_TIM3EN, eEnabled);
+	enableAPB1Peripheral(ePerif_TIM3, eEnabled);
 
 	//Set PWM signal for TIM3
 	setupPWMConfigurationOnboard(TIM3, 100, 799);
@@ -81,7 +82,7 @@ void initSegmentDisplayHardwareSPI(void)
 	//It then directly controls the LED display
 
 	//enable the SPI peripheral inside the MCU to help with the SPI communication
-	enablePeripheralRCC_APB2ENR(ePerif_SPI1EN, eEnabled);
+	enableAPB2Peripheral(ePerif_SPI1, eEnabled);
 
 	//configure pins on the MCU as special SPI pins (alternate functions)
 	//see the datasheet of STM32f0 (Table 14. Alternate functions selected through GPIOA_AFR registers for port A)
@@ -93,19 +94,19 @@ void initSegmentDisplayHardwareSPI(void)
 		PA7 SPI1_MOSI Master out slave in output the MCU will send commands Alternate function 0
 	 * */
 	//enable GPIOA peripheral to have access to PA 4,5,6,7
-	enablePeripheralRCC_AHBENR(ePerif_GPIOA, eEnabled);
+	enableAHBPeripheral(ePerif_GPIOA, eEnabled);
 
 	//setPinAlternateFunction(GPIOA, SPI1_NSS_PIN, ePin_AF0);
 	setPinAlternateFunction(GPIOA, SPI1_SCK_PIN, ePin_AF0);
 	setPinAlternateFunction(GPIOA, SPI1_MISO_PIN, ePin_AF0);
 	setPinAlternateFunction(GPIOA, SPI1_MOSI_PIN, ePin_AF0);
 
-	GPIOA->MODER |= ePin_Output << MODERPOS(SPI1_SCK_PIN);
-	GPIOA->MODER |= ePin_Output << MODERPOS(SPI1_MOSI_PIN);
+	GPIOA->MODER.reg |= ePin_Output << MODERPOS(SPI1_SCK_PIN);
+	GPIOA->MODER.reg |= ePin_Output << MODERPOS(SPI1_MOSI_PIN);
 
 	//we will manually toggle the SS pin
-	GPIOA->MODER |= ePin_Output << MODERPOS(SPI1_NSS_PIN);
-	GPIOA->ODR |= (1<<SPI1_NSS_PIN);
+	GPIOA->MODER.reg |= ePin_Output << MODERPOS(SPI1_NSS_PIN);
+	GPIOA->ODR.reg |= (1<<SPI1_NSS_PIN);
 
 	//configure the SPI1 peripheral
 	initSPIMaster(SPI1);
@@ -132,7 +133,7 @@ void initSegmentDisplaySoftwareSPI(void)
 	 * */
 
 	//enable GPIOA peripheral to have access to PA 4,5,6,7
-	enablePeripheralRCC_AHBENR(ePerif_GPIOA, eEnabled);
+	enableAHBPeripheral(ePerif_GPIOA, eEnabled);
 
 	//configure the GPIO pins for software SPI
 	spiSoftSetup(GPIOA, SPI1_NSS_PIN, SPI1_SCK_PIN, SPI1_MOSI_PIN, SPI1_MISO_PIN);
@@ -151,7 +152,7 @@ void initPWMrgbLED(void)
 	//TIM1_CHx channels are mapped on alternate function 2 (AF2)
 
 	//enable GPIOA peripheral to have access to PA8, PA9 and PA10
-	enablePeripheralRCC_AHBENR(ePerif_GPIOA, eEnabled);
+	enableAHBPeripheral(ePerif_GPIOA, eEnabled);
 
 	//setup alternate functions for the three pins
 	//After this step, value of the three pins are
@@ -161,20 +162,17 @@ void initPWMrgbLED(void)
 	setPinAlternateFunction(GPIOA, LED_RGB_BLUE, ePin_AF2);
 
 	//enable timer 1 to use it as hardware PWM generator
-	enablePeripheralRCC_APB2ENR(ePerif_TIM1, eEnabled);
+	enableAPB2Peripheral(ePerif_TIM1, eEnabled);
 
 	//we setup pwm on first 3 channels for timer1.
 	//Please see function implementation in timer.c
 	/*
 	 Prescaler is set to 799 clock is divided by 799+1 = 800 => timer counts with 10kHz frequency
-
 	 We set the autoload value to 100 means that counter counts to 100 then restarts from zero
 	 If timer counts with 10kHz, means that timer counts to 100 once every 10ms, or 100 times per second
 	 This means that PWM period is 0.01s, or we can say PWM frequency is 1/0.01s = 100Hz
-
 	 The duty cycle is from zero to ARR and we set the ARR to 100 so we can directly set the cycle
 	 from 0% to 100% by setting the value from 0 to 100
-
 	 Initially dutycycle is set to zero, so all 3 channels will be 0
 	 */
 	setupPWMConfiguration(TIM1, 100, 799);
@@ -189,36 +187,34 @@ void initPWMrgbLED(void)
 
 }
 
-void initUART2(void)
+void initUSART2(void)
 {
 	//enable GPIOA peripheral to have access to PA2 PA3
-	enablePeripheralRCC_AHBENR(ePerif_GPIOA, eEnabled);
+	enableAHBPeripheral(ePerif_GPIOA, eEnabled);
 
 	//setup alternate functions for the three pins
 	//After this step, value of the three pins are
-	//no longer controlled by the OutputDataRegister like a normal GPIO pin, but by uart2
-	setPinAlternateFunction(GPIOA, UART2_TX, ePin_AF1);
-	setPinAlternateFunction(GPIOA, UART2_RX, ePin_AF1);
+	//no longer controlled by the OutputDataRegister like a normal GPIO pin, but by usart2
+	setPinAlternateFunction(GPIOA, USART2_TX, ePin_AF1);
+	setPinAlternateFunction(GPIOA, USART2_RX, ePin_AF1);
 
 	//enable USART2 to use it as hardware PWM generator
-	//enablePeripheral(ePerif_USART2EN, eEnabled);
-	RCC_APB1ENR |= 1<<17;
+	enableAPB1Peripheral(ePerif_USART2, eEnabled);
 
-
-	//setup uart peripheral
-	setupUART(9600);
+	//setup usart peripheral
+	setupUSART(9600);
 }
 
 void initADC()
 {
 	//enable peripheral A
-	enablePeripheralRCC_AHBENR(ePerif_GPIOA, eEnabled);
+	enableAHBPeripheral(ePerif_GPIOA, eEnabled);
 
 	//set pin as anaog!
-	GPIOA->MODER |= ePin_Analog << MODERPOS(ADC_PIN);
+	GPIOA->MODER.reg |= ePin_Analog << MODERPOS(ADC_PIN);
 
 	//enable ADC peripheral
-	enablePeripheralRCC_APB2ENR(ePerif_ADC, eEnabled);
+	enableAPB2Peripheral(ePerif_ADC, eEnabled);
 
 	//setup ADC
 	setupADC();
@@ -288,10 +284,13 @@ void updateDisplayBuffer(char *buffer)
 // main is actually a convention we can use any function name, so we choose projectInit
 int projectInit(void)
 {
+  enableAHBPeripheral(ePerif_GPIOC, eEnabled);
+
+  setPinMode(GPIOC, LED_PIN, ePin_Output);  // Make bit 8 an output on GPIO C
   
   initPWMrgbLED();
   initBoardPWM();
-  RCC_APB1ENR |= 1<<1;
+  RCC->APB1ENR.reg |= 1<<1;
 
   //setup the ADC
   initADC();
@@ -299,7 +298,7 @@ int projectInit(void)
   //initSegmentDisplay();
   initSegmentDisplaySoftwareSPI();
 
-  initUART2();
+  initUSART2();
 
   int state = 0, i=0;
 
@@ -309,15 +308,10 @@ int projectInit(void)
 
   while(1)// Repeat the following forever
   {
-
-	//TODO: replace with writePin(GPIOC, LED_PIN, 1);
-    //GPIOC->ODR |= (1<<LED_PIN_BLUE);// set Bit 8 (turn on LED)
-    
+	writePin(GPIOC, LED_PIN, 1); // set Bit 8 (turn on LED)
     busyDelayMs(LED_ON_TIME);
     
-	//TODO: replace with writePin(GPIOC, LED_PIN, 0);
-	//GPIOC->ODR &= ~(1<<LED_PIN_BLUE); // clear Bit 8 (turn off LED)
-    
+    writePin(GPIOC, LED_PIN, 0);  // clear Bit 8 (turn off LED)
 	busyDelayMs(LED_OFF_TIME);
 
 	ADC_value = convertADC();
@@ -326,9 +320,9 @@ int projectInit(void)
 	updateDisplayBuffer((char*) displayBuffer);
 
 
-	txUARTch('s');
-	txUARTch(state + '0');
-	txUARTch(' ');
+	txUSARTch('s');
+	txUSARTch(state + '0');
+	txUSARTch(' ');
 
 	//we make a "game" by enabling different color transitions depending on a state variable
 	switch(state)
