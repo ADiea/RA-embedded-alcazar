@@ -33,7 +33,7 @@ typedef enum
 {
 	eDecode_allCharactersInternalFont = 0xff,
 	eDecode_allCharactersCustomFont = 0x00
-}eDisaplayDecodeMode;
+}eDisplayDecodeMode;
 
 #define MAX7219_BLANK 0xF //this is the blank(space) character fro internally decoded font
 
@@ -61,7 +61,7 @@ void setScanLimit(unsigned char numCharacters);
 
 //sets the way the chip decodes the characters.
 //We can create a custom font for it or use the internal font. See the datasheet
-void setDecodeMode(eDisaplayDecodeMode decodeMode);
+void setDecodeMode(eDisplayDecodeMode decodeMode);
 
 //clear the display by showing only blank characters
 void clearDisplay(void);

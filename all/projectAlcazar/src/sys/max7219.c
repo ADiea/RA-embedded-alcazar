@@ -98,7 +98,7 @@ void setScanLimit(unsigned char numCharacters)
 
 //sets the way the chip decodes the characters.
 //We can create a custom font for it or use the internal font. See the datasheet
-void setDecodeMode(eDisaplayDecodeMode decodeMode)
+void setDecodeMode(eDisplayDecodeMode decodeMode)
 {
 	sendMAX7219Data(MAX7219_REG_DECODEMODE, (unsigned char)decodeMode);
 }
