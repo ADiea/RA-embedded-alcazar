@@ -50,6 +50,9 @@ void sendsendMAX7219DataData(unsigned char registerAddress, unsigned char data);
 //displays character ch to the pos position
 void putChar(char ch, unsigned char pos);
 
+//displays string stringDisplayed with length of stringLen
+void putString(char stringDisplayed[], unsigned int stringLen);
+
 //sets the intensity from 0 to 15
 void setIntensity(unsigned char intensity);
 

@@ -4,6 +4,8 @@
 */
 
 #include <max7219.h>
+#include <max7219_font.h>
+#include <delay.h>
 #include <gpio.h>
 
 #define USE_SOFT_SPI 1
@@ -82,6 +84,25 @@ void putChar(char ch, unsigned char pos)
 	{
 		sendMAX7219Data(MAX7219_REG_POS_0 + pos, ch);
 	}
+}
+
+//important: set decode mode to eDecode_allCharactersCustomFont before using this function
+//displays string stringDisplayed with length of stringLen
+void putString(char stringDisplayed[], unsigned int stringLen)
+{
+	int i, j, string_pos;
+	for (string_pos = 0; string_pos < stringLen; string_pos++) // for a whole pass of the string
+	{
+		busyDelayMs(750); //delay before sending each char
+		putChar(MAX7219_font[stringDisplayed[string_pos]-32], 0); //send each char to first position of display
+
+		for (i=string_pos-1, j=1; i>=0 && j<=7; i--, j++) //update display with previous sent characters from string
+		{
+			putChar(MAX7219_font[stringDisplayed[i]-32], j);
+		}
+	}
+	busyDelayMs(1000); //delay before clear
+	clearDisplayCustomFont(); //clear the display
 }
 
 //sets the intensity from 0 to 15
