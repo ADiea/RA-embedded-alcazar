@@ -55,6 +55,9 @@
 //ADC - will convert voltage on PA0
 #define ADC_PIN 0
 
+//Buffer for value used by display
+char displayBuffer[8];
+
 //HOMEWORK: Emabling the PWM for the onboard LEDs
 void initBoardPWM(void)
 {
@@ -305,7 +308,6 @@ int projectInit(void)
 
   unsigned int ADC_value = 0;
 
-  char displayBuffer[8];
 
   while(1)// Repeat the following forever
   {
