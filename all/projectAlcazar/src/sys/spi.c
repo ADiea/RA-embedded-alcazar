@@ -20,22 +20,25 @@ void initSPIMaster(volatile SPI_Type* spi)
 	/* (2) Slave select output enabled, 8-bit Rx fifo */
 	/* (3) Enable SPI1 */
 
-	spi->CR1 = SPI_CR1_MSTR | SPI_CR1_BR | 1<<9; /* (1) */
+	spi->CR1.bit.MSTR = 1;
+	spi->CR1.bit.BR = 1;
+	spi->CR1.reg = 1<<9; /* (1) */
 
-	spi->CR2 = (0x7 << SPI_CR2_DS) | SPI_CR2_SSOE ; /* (2) */
+	spi->CR2.bit.DS = 0x7;
+	spi->CR2.bit.SSOE = 1;
 
-	spi->CR1 |= SPI_CR1_SPE; /* (3) */
+	spi->CR1.bit.SPE = 1; /* (3) */
 }
 
 //send a byte to the slave using the SPI
 //based on A.17.3 SPI full duplex communication code example
 void sendSPIByte(volatile SPI_Type* spi, unsigned char byte)
 {
-	while ((spi->SR & SPI_SR_TXE) != SPI_SR_TXE) /* Wait for Tx empty */
+	while (!spi->SR.bit.TXE) /* Wait for Tx empty */
 	{
 		;
 	}
 
 	/* Will inititiate 8-bit transmission if TXE */
-	*(unsigned char *)&(spi->DR) = byte;
+	*(unsigned char *)&(spi->DR.reg) = byte;
 }

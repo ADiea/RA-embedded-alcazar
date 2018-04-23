@@ -7,35 +7,35 @@
 //sets the timer counter register to value. value must be max 65535 (16bits)
 void setTimerCounter(volatile Timer_Type* timer, unsigned int value)
 {
-	timer->CNT = value & 0xFFFF; //force the value given to be max 65535
+	timer->CNT.reg = value & 0xFFFF; //force the value given to be max 65535
 }
 
 //sets timer prescaler. a prescaler of 2 divides the cpu clk by 2
 //making the counter count 2 times slower than cpu frequency
 void setTimerPrescaler(volatile Timer_Type* timer, unsigned int value)
 {
-	timer->PSC = value;// value==0 -> prescaler set to 1
+	timer->PSC.reg = value;// value==0 -> prescaler set to 1
 }
 
 //stops the timer from counting
 void stopTimer(volatile Timer_Type* timer)
 {
-	timer->CR1 &= ~(1<<TIM_CR1_CEN);
+	timer->CR1.bit.CEN = 0;
 }
 
 //start the timer to count in the up or down direction
 void startTimer(volatile Timer_Type* timer, eTimerDirection direction)
 {
 	//first clear the direction bit
-	timer->CR1 &= ~(1<<TIM_DIR);
+	timer->CR1.bit.DIR = 0;
 	//then set together the enable and direction bits
-	timer->CR1 |= (1<<TIM_CR1_CEN) | (direction<<TIM_DIR);
+	timer->CR1.reg |= (1<<TIM_CR1_CEN) | (direction<<TIM_DIR);
 }
 
 //reads the timer counter register value, which is the value the timer has counted to until now
 unsigned int getTimerValue(volatile Timer_Type* timer)
 {
-	return timer->CNT;
+	return timer->CNT.reg;
 }
 
 /*
@@ -82,10 +82,10 @@ void setupPWMConfigurationOnboard(volatile Timer_Type* timer,
 	//The counter clock frequency (CK_CNT) is equal to fCK_CPU / (PSC[15:0] + 1).
 
 	// (1) set the prescaler
-	timer->PSC = pwmPeriodPrescaler;
+	timer->PSC.reg = pwmPeriodPrescaler;
 
 	// (2) set the automatic reload value
-	timer->ARR = pwmPeriodCounter;
+	timer->ARR.reg = pwmPeriodCounter;
 
 	//Using CCRx registers we control the PWM dutycycle for each of the three channels
 	//For PWM mode 1 - In upcounting, channel x is active (HIGH or 1)
@@ -96,12 +96,12 @@ void setupPWMConfigurationOnboard(volatile Timer_Type* timer,
 
 	// (3) set CCRx registers for the two channels
 	//this sets the duty cycle to 0%, permanent low signal (0) for all 2 channels
-	timer->CCR3 = timer->CCR4 = 0;
+	timer->CCR3.reg = timer->CCR4.reg = 0;
 
 	//For setting the output compare mode in CCMR register,
 	//must first clear the CCxE bits in CCER
 	//>> Note: CC2S bits are writable only when the channel is OFF (CCxE = �0� in TIMx_CCER).
-	timer->CCER = 0;
+	timer->CCER.reg = 0;
 
 	//see section 17.4.7. We set the 3 channels in output compare mode.
 	//First 2 channels are set using CCMR1 and the third channel is set using CCMR2 register
@@ -125,19 +125,20 @@ void setupPWMConfigurationOnboard(volatile Timer_Type* timer,
 	//so that we end up modifying bits 15 - 8
 
 	// (4) set the capture and compare mode registers for our two channels
-	timer->CCMR2 =  (TIM_MODE_PWM1 << TIM_OCxM | 1 << TIM_OCxPE) << 8 |  //configuration for channel 4
+	timer->CCMR2.reg =  (TIM_MODE_PWM1 << TIM_OCxM | 1 << TIM_OCxPE) << 8 |  //configuration for channel 4
 					(TIM_MODE_PWM1 << TIM_OCxM | 1 << TIM_OCxPE);      //configuration for channel 3
 
 
 	// (5) enable two channels with normal polarity. see 17.4.9
-	timer->CCER = 1<<TIM_CC3E | 1<<TIM_CC4E;
+	timer->CCER.bit.CC3E = 1;
+	timer->CCER.bit.CC4E = 1;
 
 	// (6) Main output enable see 17.4.18
 	//HOMEWORK: TIM3 nu are registrul BDTR ???
 	//timer->BDTR |= 1<<TIM_BDTR_MOE;
 
 	// (7) Enable counter, upcounting
-	timer->CR1 |= 1<<TIM_CR1_CEN;
+	timer->CR1.bit.CEN = 1;
 
 	/* Bit 7 ARPE: Auto-reload preload enable
 			0: TIMx_ARR register is not buffered
@@ -148,7 +149,7 @@ void setupPWMConfigurationOnboard(volatile Timer_Type* timer,
 	//timer->CR1 = 1 << TIM_ARPE;
 
 	// (8) Force update generation (UG = 1)
-	timer->EGR |= 1<<TIM_EGR_UG;
+	timer->EGR.bit.UG = 1;
 }
 
 
@@ -182,10 +183,10 @@ void setupPWMConfiguration(volatile Timer_Type* timer,
 	//The counter clock frequency (CK_CNT) is equal to fCK_CPU / (PSC[15:0] + 1).
 
 	// (1) set the prescaler
-	timer->PSC = pwmPeriodPrescaler;
+	timer->PSC.reg = pwmPeriodPrescaler;
 
 	// (2) set the automatic reload value
-	timer->ARR = pwmPeriodCounter;
+	timer->ARR.reg = pwmPeriodCounter;
 
 	//Using CCRx registers we control the PWM dutycycle for each of the three channels
 	//For PWM mode 1 - In upcounting, channel x is active (HIGH or 1)
@@ -196,12 +197,12 @@ void setupPWMConfiguration(volatile Timer_Type* timer,
 
 	// (3) set CCRx registers for the three channels
 	//this sets the duty cycle to 0%, permanent low signal (0) for all 3 channels
-	timer->CCR1 = timer->CCR2 = timer->CCR3 = 0;
+	timer->CCR1.reg = timer->CCR2.reg = timer->CCR3.reg = 0;
 
 	//For setting the output compare mode in CCMR register,
 	//must first clear the CCxE bits in CCER
 	//>> Note: CC2S bits are writable only when the channel is OFF (CCxE = �0� in TIMx_CCER).
-	timer->CCER = 0;
+	timer->CCER.reg = 0;
 
 	//see section 17.4.7. We set the 3 channels in output compare mode.
 	//First 2 channels are set using CCMR1 and the third channel is set using CCMR2 register
@@ -226,20 +227,22 @@ void setupPWMConfiguration(volatile Timer_Type* timer,
 	//so that we end up modifying bits 15 - 8
 
 	// (4) set the capture and compare mode registers for our three channels
-	timer->CCMR1 =  (TIM_MODE_PWM1 << TIM_OCxM | 1 << TIM_OCxPE) << 8 |  //configuration for channel 2
+	timer->CCMR1.reg =  (TIM_MODE_PWM1 << TIM_OCxM | 1 << TIM_OCxPE) << 8 |  //configuration for channel 2
 					(TIM_MODE_PWM1 << TIM_OCxM | 1 << TIM_OCxPE);      //configuration for channel 1
 
-	timer->CCMR2 =  (TIM_MODE_PWM1 << TIM_OCxM | 1 << TIM_OCxPE);      //configuration for channel 3
+	timer->CCMR2.reg =  (TIM_MODE_PWM1 << TIM_OCxM | 1 << TIM_OCxPE);      //configuration for channel 3
 
 
 	// (5) enable three channels with normal polarity. see 17.4.9
-	timer->CCER = 1<<TIM_CC1E | 1<<TIM_CC2E | 1<<TIM_CC3E;
+	timer->CCER.bit.CC1E = 1;
+	timer->CCER.bit.CC2E = 1;
+	timer->CCER.bit.CC3E = 1;
 
 	// (6) Main output enable see 17.4.18
-	timer->BDTR |= 1<<TIM_BDTR_MOE;
+	timer->BDTR.bit.MOE = 1;
 
 	// (7) Enable counter, upcounting
-	timer->CR1 |= 1<<TIM_CR1_CEN;
+	timer->CR1.bit.CEN = 1;
 
 	/* Bit 7 ARPE: Auto-reload preload enable
 			0: TIMx_ARR register is not buffered
@@ -250,7 +253,7 @@ void setupPWMConfiguration(volatile Timer_Type* timer,
 	//timer->CR1 = 1 << TIM_ARPE;
 
 	// (8) Force update generation (UG = 1)
-	timer->EGR |= 1<<TIM_EGR_UG;
+	timer->EGR.bit.UG = 1;
 }
 
 /*
@@ -276,16 +279,16 @@ void setPWMDuty(volatile Timer_Type* timer, unsigned int channel, unsigned int p
 	switch(channel)
 	{
 		case 0:
-			pDutyRegister = & (timer->CCR1);
+			pDutyRegister = & (timer->CCR1.reg);
 			break;
 		case 1:
-			pDutyRegister = & (timer->CCR2);
+			pDutyRegister = & (timer->CCR2.reg);
 			break;
 		case 2:
-			pDutyRegister = & (timer->CCR3);
+			pDutyRegister = & (timer->CCR3.reg);
 			break;
 		case 3:
-			pDutyRegister = & (timer->CCR4);
+			pDutyRegister = & (timer->CCR4.reg);
 			break;
 	};
 

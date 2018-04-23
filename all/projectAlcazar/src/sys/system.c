@@ -8,53 +8,39 @@
 //declare the extern projectInit() function. Will be called after system is init
 extern void projectInit();
 
-void enablePeripheralRCC_AHBENR(ePeripheralsRCC_AHBENR peripheral, eEnableState enable)
+void enableAHBPeripheral(eAHBPeripherals peripheral, eEnableState enable)
 {
-	volatile unsigned int *pRCCRegister;
-
-	pRCCRegister = &RCC_AHBENR;
-	
-	if(enable == eEnabled)
+	if (enable == eEnabled)
 	{
-		*pRCCRegister |= 1 << peripheral;
+		RCC->AHBENR.reg |= 1 << peripheral;
 	}
 	else
 	{
-		*pRCCRegister &= ~(1 << peripheral);
+		RCC->AHBENR.reg &= ~(1 << peripheral);
 	}
 }
 
-
-void enablePeripheralRCC_APB1ENR(ePeripheralsRCC_APB1ENR peripheral, eEnableState enable)
+void enableAPB1Peripheral(eAPB1Peripherals peripheral, eEnableState enable)
 {
-	volatile unsigned int *pRCCRegister2;
-
-	pRCCRegister2 = &RCC_APB1ENR;
-
-	if(enable == eEnabled)
+	if (enable == eEnabled)
 	{
-		*pRCCRegister2 |= 1 << peripheral;
+		RCC->APB1ENR.reg |= 1 << peripheral;
 	}
 	else
 	{
-		*pRCCRegister2 &= ~(1 << peripheral);
+		RCC->APB1ENR.reg &= ~(1 << peripheral);
 	}
 }
 
-
-void enablePeripheralRCC_APB2ENR(ePeripheralsRCC_APB2ENR peripheral, eEnableState enable)
+void enableAPB2Peripheral(eAPB2Peripherals peripheral, eEnableState enable)
 {
-	volatile unsigned int *pRCCRegister3;
-
-	pRCCRegister3 = &RCC_APB2ENR;
-
-	if(enable == eEnabled)
+	if (enable == eEnabled)
 	{
-		*pRCCRegister3 |= 1 << peripheral;
+		RCC->APB2ENR.reg |= 1 << peripheral;
 	}
 	else
 	{
-		*pRCCRegister3 &= ~(1 << peripheral);
+		RCC->APB2ENR.reg &= ~(1 << peripheral);
 	}
 }
 
@@ -63,7 +49,7 @@ void enablePeripheralRCC_APB2ENR(ePeripheralsRCC_APB2ENR peripheral, eEnableStat
 void main()
 {
 	//init the system
-
+	int a = 0xFF00FF00;
 	//after system is inited, call the projectInit 
 	projectInit();
 }

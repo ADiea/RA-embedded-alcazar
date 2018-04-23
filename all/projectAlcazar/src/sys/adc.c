@@ -14,14 +14,14 @@ void setupADC(void)
 	/* (4) Wait until ADC ready */
 
 	//configure clock while adc is disabled
-	ADC1->CFGR2 |= ADC_CFGR2_CK;
+	ADC1->CFGR2.reg |= ADC_CFGR2_CK;
 
-	if ((ADC1->ISR & ADC_ISR_ADRDY) != 0) /* (1) */
+	if (ADC1->ISR.bit.ADRDY) /* (1) */
 	{
-	ADC1->ISR |= ADC_ISR_ADRDY; /* (2) */
+	ADC1->ISR.bit.ADRDY = 1; /* (2) */
 	}
-	ADC1->CR |= ADC_CR_ADEN; /* (3) */
-	while ((ADC1->ISR & ADC_ISR_ADRDY) == 0) /* (4) */
+	ADC1->CR.bit.ADEN = 1; /* (3) */
+	while (!ADC1->ISR.bit.ADRDY) /* (4) */
 	{
 	/* For robust implementation, add here time-out management */
 	}
@@ -37,20 +37,20 @@ unsigned int convertADC(void)
 	than 17.1us */
 	/* (4) Wake-up the VREFINT (only for VBAT, Temp sensor and VRefInt) */
 
-	ADC1->CHSELR =  ADC_CHSELR_CHSEL0; /* (2) */
+	ADC1->CHSELR.reg =  ADC_CHSELR_CHSEL0; /* (2) */
 
 	//don't care about sampling ADC1->SMPR |= ADC_SMPR_SMP_0 | ADC_SMPR_SMP_1 | ADC_SMPR_SMP_2; /* (3) */
 	//ADC->CCR |= ADC_CCR_VREFEN; /* (4) */
 
 	/* Performs the AD conversion */
-	ADC1->CR |= ADC_CR_ADSTART; /* Start the ADC conversion */
+	ADC1->CR.bit.ADSTART = 1; /* Start the ADC conversion */
 
-	while ((ADC1->ISR & ADC_ISR_EOC) == 0) /* Wait end of conversion */
+	while (!ADC1->ISR.bit.EOC) /* Wait end of conversion */
 	{
 	/* For robust implementation, add here time-out management */
 	}
 
-	ADC_Result = ADC1->DR; /* Store the ADC conversion result */
+	ADC_Result = ADC1->DR.bit.DATA; /* Store the ADC conversion result */
 
 	return ADC_Result;
 }
