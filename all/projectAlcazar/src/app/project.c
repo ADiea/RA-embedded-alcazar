@@ -16,7 +16,6 @@
 #define LED_PIN_BLUE 8
 #define LED_PIN_GREEN 9
 
-
 //define a led on delay time of 1s = 1000ms
 #define LED_ON_TIME 100
 

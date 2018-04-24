@@ -183,7 +183,7 @@ typedef union {
 		uint32_t CC4P:1;
 		uint32_t CC4NE:1;
 		uint32_t CC4NP:1;
-		uint32_t :18;
+		uint32_t :16;
 	} bit;
 	uint32_t reg;
 } TIMx_CCER;
@@ -297,18 +297,7 @@ typedef union {
 } TIMx_DMAR;
 
 
-//! Because timers are not all the same, some offer slightly different functions
-//	we cannot treat them all the same as the GPIOs, because some of them have different
-//  registers and register offsets
-// Therefore we must make sure from the refernece manual that we use the correct register order
-//	=> we will define different structure for registers for every used timer
-
-//Update 17/03/2018: The above comment is only partially correct. It looks like the architecture is
-//well designed so that even if certain timers do not have all the registers still their other
-//registers are at the same offsets. This means we can define one struct with all the registers
-//and for each timer only use the registrs present on that specific timer (see the reference manual
-//for each timer)
-
+//Define the TIMER register structure
 typedef struct
 {
 	//although registers are 16 bit wide if we look at the offsets they are spaced 4 bytes apart

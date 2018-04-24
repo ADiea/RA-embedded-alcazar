@@ -49,7 +49,7 @@ void enableAPB2Peripheral(eAPB2Peripherals peripheral, eEnableState enable)
 void main()
 {
 	//init the system
-	int a = 0xFF00FF00;
+
 	//after system is inited, call the projectInit 
 	projectInit();
 }

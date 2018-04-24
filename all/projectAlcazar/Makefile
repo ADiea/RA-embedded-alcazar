@@ -8,7 +8,7 @@
 
 #Set WINDOWS variable default 0; ?= means set if not already set; if you type in console "make all WINDOWS=1" you will set WINDOWS to 1 from outside
 #For windows users set this in eclipse, build targets.
-WINDOWS ?= 1
+WINDOWS ?= 0
 MACOSX ?= 0
 
 ifeq ($(WINDOWS),1)
@@ -64,7 +64,7 @@ main.elf : $(OBJS)
 	$(LD) $(OBJS) -T $(LINKER_SCRIPT) --cref -Map out/main.map -nostartfiles -o out/main.elf
 	$(OBJCOPY) -O ihex out/main.elf out/main.hex
 	$(OBJCOPY) -O binary out/main.elf out/main.bin
-	$(OBJDUMP) -D out/main.elf > out/main.lst
+#	$(OBJDUMP) -D out/main.elf > out/main.lst
 #	$(OBJDUMP) -St out/main.elf > out/main.lst
 	$(SIZE) out/main.elf
 
