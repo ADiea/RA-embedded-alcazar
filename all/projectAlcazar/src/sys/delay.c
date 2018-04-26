@@ -50,3 +50,18 @@ void busyDelayMs(unsigned int ms)
 	//disable timer 15
 	enableAPB2Peripheral(ePerif_TIM15, eDisabled);
 }
+
+//sets up timer16 for building a global systick source
+//this uses the compare interrupt to generate an interrupt every 1ms
+void setupSysTickTimer()
+{
+	//enabl timer 16
+	enableAPB2Peripheral(ePerif_TIM16, eEnabled);
+
+	//enable interrupt on compare channel 1
+	TIM16->DIER.bit.CC1IE = 1;
+
+
+	TIM16->CCMR1.bit.CC1S = ;
+}
+

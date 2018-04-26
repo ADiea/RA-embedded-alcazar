@@ -14,6 +14,7 @@
 #define TIM1_BASE 0x40012C00
 #define TIM3_BASE 0x40000400
 #define TIM15_BASE 0x40014000
+#define TIM16_BASE 0x40014400
 
 //17.4.1 TIMx control register 1 (TIMx_CR1)
 typedef union {
@@ -327,6 +328,7 @@ typedef struct
 #define TIM1 ((volatile Timer_Type*)TIM1_BASE)
 #define TIM3 ((volatile Timer_Type*)TIM3_BASE)
 #define TIM15 ((volatile Timer_Type*)TIM15_BASE)
+#define TIM16 ((volatile Timer_Type*)TIM16_BASE)
 
 typedef enum
 {
